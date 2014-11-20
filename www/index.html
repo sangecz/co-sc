@@ -24,18 +24,94 @@
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <!--<link rel="stylesheet" type="text/css" href="css/index.css" />-->
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.css" />
+        <title>CorrectiveScripts</title>
     </head>
     <body>
         <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
+            <!--app<h1>Apache Cordova</h1>-->
+            <!--<p id="conn-state"></p>-->
+            <!--<button name="buttonClick" onclick="callAnothePage()">Click Me!</button>-->
+            <!--<div id="deviceready" class="blink">-->
+                <!--<p class="event listening">Connecting to Device</p>-->
+                <!--<p class="event received">Device is Readyfefewfewfwefwef</p>-->
+
+            <!-- This page will show first -->
+            <div data-role="page" id="index">
+
+                <div data-role="header" data-position="inline" id="indexheader" >
+                    <h1>Corrective Scripts</h1>
+                </div><!-- /header -->
+
+                <div data-role="content">
+                    <h3>page Content</h3>
+                    <button name="buttonClick" onclick=" $.mobile.changePage($('#page_overview'));">Devices overview</button>
+                    <button name="buttonClick" onclick=" $.mobile.changePage($('#page_scripts'));">Scripts</button>
+                    <button name="buttonClick" onclick=" $.mobile.changePage($('#page_protocols'));">Protocols</button>
+                    <button name="buttonClick" onclick=" testHTTP();">test req</button>
+                    <p id="resp">No response</p>
+                </div><!-- /content -->
+
+                <div data-role="footer"  data-position="fixed">
+                    <h3>Footer Text</h3>
+                </div><!-- /footer -->
             </div>
-        </div>
+
+            <!-- SECOND PAGE -->
+            <div data-role="page" id="page_overview">
+
+                <div data-role="header" data-position="fixed" id="page2header" >
+                    <a href="index.html" data-icon="back">Back</a>
+                    <h1>Devices overview</h1>
+                </div><!-- /header -->
+
+                <iframe width="100%" id="overview_frame" src="http://10.0.0.6/icinga/" onload="resizeOverviewFrame('overview_frame');"></iframe>
+
+                <div data-role="footer"  data-position="fixed">
+                    <h3>Footer Text</h3>
+                </div>
+            </div>
+
+                    <!-- THRIRD PAGE -->
+            <div data-role="page" id="page_scripts">
+
+                <div data-role="header" data-position="inline" id="page3header" >
+                    <a href="index.html" data-icon="back">Back</a>
+                    <h1>Scripts</h1>
+                </div><!-- /header -->
+
+                <div data-role="content">
+                    <h3>page Content</h3>
+                </div><!-- /content -->
+
+                <div data-role="footer"  data-position="fixed">
+                    <h3>Footer Text</h3>
+                </div>
+            </div>
+
+            <div data-role="page" id="page_protocols">
+
+                <div data-role="header" data-position="inline" id="page4header" >
+                    <a href="index.html" data-icon="back">Back</a>
+                    <h1>Protocols</h1>
+                </div><!-- /header -->
+
+                <div data-role="content">
+                    <h3>page Content</h3>
+                 </div><!-- /content -->
+
+                <div data-role="footer"  data-position="fixed">
+                    <h3>Footer Text</h3>
+                </div>
+            </div>
+            </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/HttpConnector.js"></script>
+        <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.js"></script>
+
+
     </body>
 </html>
