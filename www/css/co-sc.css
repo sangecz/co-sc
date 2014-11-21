@@ -1,0 +1,8 @@
+#overview_form label.error {
+    color: #FB3A3A;
+    display: inline-block !important;
+    margin: 2px 0 5px 25px !important;
+    padding: 0 !important;
+    text-align: left !important;
+    width: 220px !important;
+}
