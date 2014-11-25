@@ -1,8 +1,30 @@
-#overview_form label.error {
+label.error {
     color: #FB3A3A;
     display: inline-block !important;
-    margin: 2px 0 5px 25px !important;
+    margin: 4px 0 0px 20px !important;
     padding: 0 !important;
     text-align: left !important;
-    width: 220px !important;
+    width: 280px !important;
+    /*position: fixed;*/
+}
+
+h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#page_settings .ui-content {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.ui-field-contain {
+    border-bottom-width: 0px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#script_textarea {
+    height: 100%;
+    width: 100%;
 }

@@ -1,7 +1,25 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
-module.exports = [];
+module.exports = [
+    {
+        "file": "plugins/com.badrit.MacAddress/www/MacAddress.js",
+        "id": "com.badrit.MacAddress.MacAddress",
+        "clobbers": [
+            "window.MacAddress"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.device/www/device.js",
+        "id": "org.apache.cordova.device.device",
+        "clobbers": [
+            "device"
+        ]
+    }
+];
 module.exports.metadata = 
 // TOP OF METADATA
-{}
+{
+    "com.badrit.MacAddress": "0.1.0",
+    "org.apache.cordova.device": "0.2.12"
+}
 // BOTTOM OF METADATA
 });

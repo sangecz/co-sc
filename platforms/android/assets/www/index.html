@@ -8,11 +8,7 @@
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/co-sc.css" />
-        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.css" />
-
-        <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
-        <script type="text/javascript" src="js/jquery.mobile-1.4.5.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/lib/jquery.mobile-1.4.5.css" />
 
         <title>CorrectiveScripts</title>
 
@@ -24,108 +20,176 @@
 
                 <div data-role="header" data-position="fixed" id="index_header" >
                     <h1>Corrective Scripts</h1>
+                    <a href="" class="ui-btn-right" data-icon="gear" data-role="button" data-iconpos="notext"
+                       onclick="$.mobile.changePage($('#' + page.SETTINGS), util.transOpt);
+                       testy();"></a>
                 </div><!-- /header -->
 
-                <div data-role="content" class="ui-grid-b ui-responsive" data-position="fixed">
+                <div data-role="content" class="ui-grid-b ui-responsive">
                     <div class="ui-block-a">
                          <button data-corners="true" class="indexBtn" data-iconpos="top" data-icon="info"
-                             onclick="loadOverview(); $.mobile.changePage($('#page_overview'), { transition: 'slide', changeHash: false });">Devices
+                             onclick="overview.checkIfUrlSet(); settings.load();
+                             $.mobile.changePage($('#' + page.OVERVIEW), util.transOpt)">
+                             Overview
                          </button>
                     </div>
                     <div class="ui-block-b">
                         <button class="indexBtn" data-iconpos="top" data-icon="bars"
-                                onclick=" $.mobile.changePage($('#page_scripts'), { transition: 'slide' });">Scripts
+                                onclick=" $.mobile.changePage($('#' + page.SCRIPTS), util.transOpt);">
+                            Scripts
                         </button>
                     </div>
                     <div class="ui-block-c">
                         <button class="indexBtn" data-iconpos="top" data-icon="forward"
-                                onclick=" $.mobile.changePage($('#page_protocols'), { transition: 'slide' });">Protocols
+                                onclick=" $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);">
+                            Protocols
                         </button>
                         <!--<button class="indexBtn" onclick=" testHTTP();">test req</button>-->
                         <!--<p id="resp">No response</p>-->
                     </div>
                 </div><!-- /content -->
 
-                <div data-role="footer"  data-position="fixed">
-                    <h3>Footer Text</h3>
-                </div><!-- /footer -->
+                <!-- POPUP -->
+                <div data-role="popup" id="pin_dialog" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>PIN</h1>
+                    </div>
+                    <div data-role="content" class="ui-corner-bottom ui-content">
+                        <h3 class="ui-title">Enter your passphrase for secure storage.</h3>
+                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                        <a href="" data-role="button" data-inline="true" data-transition="flow"
+                           data-theme="c" onclick="secStorage.setPin()">Save</a>
+                    </div>
+                </div>
             </div>
 
+            <!--------------------------------------------------------------------->
             <!-- OVERVIEW -->
-            <div data-role="page" id="page_overview">
+            <div data-role="page" id="page_overview" data-position="fixed">
                 <div data-role="header" data-position="fixed" id="page_overview_header" >
                     <a href=""  data-icon="back" data-role="button" data-iconpos="notext"
-                       onclick=" $.mobile.changePage($('#index'), { transition: 'slide', reverse: true });"></a>
+                       onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
                     <h1>Devices overview</h1>
-                    <a href="" data-icon="gear" data-role="button" data-iconpos="notext"
-                       onclick="$.mobile.changePage($('#page_overview_settings'), { transition: 'slide' });"></a>
-
                 </div><!-- /header -->
 
                 <iframe width="100%" id="overview_frame"
-
-                        onload="resizeOverviewFrame('overview_frame');">
+                        src="http://icinga.org"
+                        onload="util.resizeElement('overview_frame');">
                 </iframe>
 
             </div>
 
-            <!-- OVERVIEW_SETTINGS -->
-                <div data-role="page" id="page_overview_settings">
 
-                    <div data-role="header" data-position="fixed" id="page_overview_settings_header" >
-                        <a href=""  data-icon="delete" data-iconpos="notext"
-                           onclick="backOverview();"></a>
-                        <h1>Settings</h1>
-                        <a href=""  data-icon="check" data-iconpos="notext"
-                           onclick="$('#overview_form').submit();"></a>
+                <!--</div>-->
+            <!--------------------------------------------------------------------->
+            <!-- SCRIPTS -->
+            <div data-role="page" id="page_scripts" data-position="fixed">
+
+                <div data-role="header" data-position="fixed" id="page_scripts_header" >
+                    <a href=""  data-icon="back" data-role="button" data-iconpos="notext"
+                       onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
+                    <h1>Scripts</h1>
+                    <a href="" data-icon="refresh" data-role="button" data-iconpos="notext"
+                       onclick=" script.updateList(); "></a>
+
+                </div><!-- /header -->
+
+                <div data-role="content">
+                    <ul data-role="listview" data-theme="g" id="scripts_list">
+                    </ul>
+                </div><!-- /content -->
+
+                <div data-role="footer"  data-position="fixed">
+
+                    <a href="" style="float: right; margin-right: 5px;"  data-icon="plus" data-role="button" data-iconpos="notext"
+                       onclick=" script.add();"></a>
+
+                </div>
+            </div>
+                <!-- SCRIPTS EDIT -->
+                <div data-role="page" id="page_scripts_edit" data-position="fixed">
+
+                    <div data-role="header" data-position="fixed" id="page_scripts_edit_header" >
+                        <a href="" data-icon="back" data-role="button" data-iconpos="notext"
+                           onclick=" $.mobile.changePage($('#' + page.SCRIPTS), util.backTransOpt);"></a>
+                        <h1></h1>
+                        <a href=""  data-icon="check" data-role="button" data-iconpos="notext"
+                           onclick=" $('#script_edit_form').submit(); "></a>
+
                     </div><!-- /header -->
 
-                    <div data-role="content" class="ui-grid-solo ui-responsive">
-                        <form action="" method="post" id="overview_form" novalidate="novalidate">
+                    <div data-role="content">
+                        <form action="" method="post" id="script_edit_form" novalidate="novalidate">
 
                             <div data-role="fieldcontain">
-                                <input type="text" name="overview_url" value="" id="overview_url" placeholder="Monitoring system URL: http://" />
-                                <label hidden="hidden" id="overview_url-error" class="error" for="overview_url"></label>
+                                <label for="script_edit_name">Name: </label>
+                                <input type="text" name="script_edit_name" id="script_edit_name" />
+                                <label id="script_edit_name_error" class="error" for="script_edit_name"></label>
                             </div>
                             <div data-role="fieldcontain">
-                                <input type="text" name="overview_username" value="" id="overview_username" placeholder="Username" />
-                                <label hidden="hidden" id="overview_username-error" class="error" for="overview_username"></label>
+                                <label for="script_edit_desc">Description: </label>
+                                <input type="text" name="script_edit_desc" value="" id="script_edit_desc"  />
+                                <label hidden="hidden" id="script_edit_desc-error" class="error" for="script_edit_desc"></label>
                             </div>
                             <div data-role="fieldcontain">
-                                <input type="password" name="overview_password" value="" id="overview_password" placeholder="Password" />
-                                <label hidden="hidden" id="overview_password-error" class="error" for="overview_password"></label>
+                                <label for="script_edit_ip">IP address: </label>
+                                <input type="text" name="script_edit_ip" value="" id="script_edit_ip"  />
+                                <label hidden="hidden" id="script_edit_ip-error" class="error" for="script_edit_ip"></label>
                             </div>
-                                <!--<input type="submit" />-->
+                            <div data-role="fieldcontain">
+                                <label for="script_edit_protocol">Protocol: </label>
+                                <select name="script_edit_protocol" id="script_edit_protocol">
+                                    <option>dummy</option>
+                                    <option>dummy</option>
+                                    <option>dummy</option>
+                                </select>
+                            </div>
+                            <div data-role="fieldcontain">
+                                <label for="editor">Script content: </label>
+                                <!--<textarea name="script_edit_content" id="script_edit_content" >#!/bin/bash</textarea>-->
+                                <div id="editor">function foo(items) {
+                                    var x = "All this is syntax highlighted";
+                                    return x;
+                                    }</div>
+                                <label hidden="hidden" id="editor-error" class="error" for="editor"></label>
+                            </div>
+                            <!--<input type="submit" />-->
 
                         </form>
                     </div><!-- /content -->
 
+                    <!-- POPUP -->
+                    <div data-role="popup" id="confirm_dialog" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                        <div data-role="header" data-theme="a" class="ui-corner-top">
+                            <h1>Delete script?</h1>
+                        </div>
+                        <div data-role="content" class="ui-corner-bottom ui-content">
+                            <h3 class="ui-title">Are you sure you want to delete this script?</h3>
+                            <p>This action cannot be undone.</p>
+                            <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                            <a href="" data-role="button" data-inline="true" data-transition="flow"
+                               data-theme="c" onclick="script.del();">Delete</a>
+                        </div>
+                    </div>
+
+                    <div data-role="footer"  data-position="fixed" id="script_edit_footer">
+                        <!--<a href=""  data-icon="edit" data-role="button" data-iconpos="notext"-->
+                           <!--onclick=""></a>-->
+                        <a href="#confirm_dialog" id="script_delete" style="margin-left: 5px;" data-icon="delete"
+                           data-role="button" data-iconpos="notext" data-rel="popup" data-position-to="window"
+                           data-inline="true" data-transition="pop" ></a>
+
+                    </div>
+
                 </div>
 
-            <!-- SCRIPTS -->
-            <div data-role="page" id="page_scripts">
-
-                <div data-role="header" data-position="fixed" id="page_scripts_header" >
-                    <a href=""  data-icon="back" data-role="button" data-iconpos="notext"
-                       onclick=" $.mobile.changePage($('#index'), { transition: 'slide', reverse: true });"></a>
-                    <h1>Scripts</h1>
-                </div><!-- /header -->
-
-                <div data-role="content">
-                    <h3>page Content</h3>
-                </div><!-- /content -->
-
-                <div data-role="footer"  data-position="fixed">
-                    <h3>Footer Text</h3>
-                </div>
-            </div>
-
+            <!--------------------------------------------------------------------->
             <!-- PROTOCOLS -->
-            <div data-role="page" id="page_protocols">
+            <div data-role="page" id="page_protocols" data-position="fixed">
 
                 <div data-role="header" data-position="fixed" id="page_protocols_header" >
                     <a href=""  data-icon="back" data-role="button" data-iconpos="notext"
-                       onclick=" $.mobile.changePage($('#index'), { transition: 'slide', reverse: true });"></a>
+                       onclick="  $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
                     <h1>Protocols</h1>
                 </div><!-- /header -->
 
@@ -137,15 +201,111 @@
                     <h3>Footer Text</h3>
                 </div>
             </div>
+            <!--------------------------------------------------------------------->
+            <!-- SETTINGS -->
+            <div data-role="page" id="page_settings" data-position="fixed">
+
+                <div data-role="header" data-position="fixed" id="page_settings_header" >
+                    <a href=""  data-icon="back" data-iconpos="notext"
+                       onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
+                    <h1>Settings</h1>
+                       <!--onclick="$('settings_form').submit();"></a>-->
+                </div><!-- /header -->
+
+                <div data-role="content" class="ui-grid-solo ui-responsive">
+
+                    <form action="php/db.php" method="post" id="settings_ws_form" novalidate="novalidate">
+
+                        <h4>Info</h4>
+                        <div data-role="fieldcontain">
+                            <label for="info_uuid">Device uuid: </label>
+                            <input type="text" readonly="" name="info_uuid" id="info_uuid"
+                                   onload="settings.info.setDeviceUUID();" />
+                        </div>
+
+                        <h4>Web Server connection</h4>
+                        <div data-role="fieldcontain">
+                            <label for="ws_url">URL: </label>
+                            <input type="text" name="ws_url" value="https://ss.ss" id="ws_url" placeholder="Monitoring system URL: http://" />
+                            <label hidden="hidden" id="ws_url-error" class="error" for="ws_url"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="ws_username">Username: </label>
+                            <input type="text" name="ws_username" value="vv" id="ws_username" placeholder="Username" />
+                            <label hidden="hidden" id="ws_username-error" class="error" for="ws_username"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="ws_password">Password: </label>
+                            <input type="password" name="ws_password" value="vv" id="ws_password" placeholder="Password" />
+                            <label hidden="hidden" id="ws_password-error" class="error" for="ws_password"></label>
+                        </div>
+
+                        <div data-role="fieldcontain">
+                            <a href="" data-role="button"  data-icon="check"
+                               data-iconpos="right" id="submit_settings_ws">Save</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div data-role="content" class="ui-grid-solo ui-responsive">
+                    <form action="php/db.php" method="post" id="settings_overview_form" novalidate="novalidate">
+
+                        <h4>Monitoring tool connection</h4>
+                        <div data-role="fieldcontain">
+                            <label for="overview_url">URL: </label>
+                            <input type="text" name="overview_url" value="http://" id="overview_url" placeholder="Monitoring system URL: http://" />
+                            <label hidden="hidden" id="overview_url-error" class="error" for="overview_url"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="overview_username">Username: </label>
+                            <input type="text" name="overview_username" value="" id="overview_username" placeholder="Username" />
+                            <label hidden="hidden" id="overview_username-error" class="error" for="overview_username"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="overview_password">Password: </label>
+                            <input type="password" name="overview_password" value="" id="overview_password" placeholder="Password" />
+                            <label hidden="hidden" id="overview_password-error" class="error" for="overview_password"></label>
+                        </div>
+
+                        <div data-role="fieldcontain">
+                            <a href="" data-role="button" data-icon="check" data-iconpos="right" id="submit_settings_overview">Save</a>
+                        </div>
+
+                    </form>
+                    <!-- POPUP -->
+
+                </div><!-- /content -->
+
+
+
             </div>
+        </div>
+
+        <script type="text/javascript" src="js/lib/jquery-2.1.1.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.mobile-1.4.5.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.validate.min.js"></script>
+        <!--<script type="text/javascript" src="js/lib/crypto/enc-base64-min.js"></script>-->
+        <script type="text/javascript" src="js/lib/crypto/tripledes.js"></script>
+        <script type="text/javascript" src="js/lib/crypto/core-min.js"></script>
+        <script type="text/javascript" src="js/lib/crypto/sha512.js"></script>
+
+        <script src="js/lib/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/javascript");
+        </script>
+
+        <script type="text/javascript" src="js/utils.js"></script>
+        <script type="text/javascript" src="js/app.js"></script>
+        <script type="text/javascript" src="js/connector.js"></script>
+        <script type="text/javascript" src="js/SecStorage.js"></script>
+        <script type="text/javascript" src="js/overview.js"></script>
+        <script type="text/javascript" src="js/scripts.js"></script>
+        <script type="text/javascript" src="js/settings.js"></script>
+
+        <script type="text/javascript" src="js/protocols.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
-
-
-
-
-
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript" src="js/main.js"></script>
 
     </body>
 </html>
