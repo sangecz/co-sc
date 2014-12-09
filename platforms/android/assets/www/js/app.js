@@ -1,5 +1,6 @@
 var page = {
     INDEX: "index",
+    ENTERPIN: "enterpin",
     OVERVIEW: 'page_overview',
     PROTOCOLS: 'page_protocols',
     SCRIPTS: 'page_scripts',
@@ -18,23 +19,23 @@ var app = {
     // Bind Event Listeners
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.addEventListener("backbutton", this.onBackKeyDown, false);
     },
 
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-     // FIXME nedojde sem
     },
 
     receivedEvent: function(id) {
+        document.addEventListener("backbutton", this.onBackKeyDown, false);
+        document.addEventListener("pause", this.onPauseApp);
+        document.addEventListener("resume", this.onResumeApp);
 
-        $("#index").trigger("pagecreate"); /*This is like a page refresh in jquery*/
-
+        $("#enterpin").trigger("pagecreate");
     },
 
     onBackKeyDown: function () {
 
-        if($.mobile.activePage.attr('id') == page.INDEX) {
+        if($.mobile.activePage.attr('id') == page.INDEX || $.mobile.activePage.attr('id') == page.ENTERPIN) {
             navigator.app.exitApp();
         } else if($.mobile.activePage.attr('id') == page.OVERVIEW) {
             $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);
@@ -49,26 +50,20 @@ var app = {
         } else {
             history.back();
         }
+    },
+
+    onPauseApp : function() {
+        secStorage.instance.removePass();
+        secStorage.instance = util.UNDEF;
+    },
+
+    onResumeApp : function() {
+        setTimeout(function(){
+            $.mobile.changePage($('#' + page.ENTERPIN), util.backTransOpt);
+            $('#enterpin_pin').val('');
+        }, 0);
     }
 };
 
 app.initialize();
 
-function testy(){
-
-    secStorage = new SecStorage('tajne_heslo');
-
-    //alert(secStorage.getPassphraseHash());
-    //ss.saveToStorage({first : 1, second : 2 }, 'klic_k_datum');
-    //var ret = ss.loadFromStorage('klic_k_datum');
-
-
-    //$('#info_uuid').val(secCryptoJS.SHA512("tajne_heslo"));
-
-
-    //var encrypted = CryptoJS.TripleDES.encrypt("Message", "Secret Passphrase");
-    //
-    //var decrypted = CryptoJS.TripleDES.decrypt(encrypted, "Secret Passphrase");
-    //
-    //alert(decrypted.toString(CryptoJS.enc.Utf8));
-}

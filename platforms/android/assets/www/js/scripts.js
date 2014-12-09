@@ -123,12 +123,12 @@ $(document).on('pagebeforeshow', '#' + page.SCRIPTS_EDIT, function(){
                         required: true
                     },
                     script_edit_ip: "required",
-                    editor: "required"
+                    script_edit_content: "required"
                 },
                 messages: {
                     script_edit_name: "Please enter name.",
                     script_edit_ip: "Please enter IP address.",
-                    editor: "Please enter content."
+                    script_edit_content: "Please enter content."
                 },
                 submitHandler: function(form) {
                     var scriptName = $("#script_edit_name").val();

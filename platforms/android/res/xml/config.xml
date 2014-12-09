@@ -13,11 +13,14 @@
     <feature name="Device">
         <param name="android-package" value="org.apache.cordova.device.Device" />
     </feature>
+    <feature name="InAppBrowser">
+        <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser" />
+    </feature>
     <name>Corrective-Scripts</name>
     <description>
     </description>
     <author email="sange.marek@gmail.com">
-        Petr MArek
+        Petr Marek
     </author>
     <content src="index.html" />
     <access origin="*" />

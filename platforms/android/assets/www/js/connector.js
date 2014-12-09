@@ -2,37 +2,75 @@
  * Created by sange on 11/24/14.
  */
 
-var connector = {
 
-    auth : function (){
+RestConnector = function() {
+    var apiKey = util.UNDEF;
 
-        var val = "*" + secStorage.getPassphraseHash() + "*";
-        var formdata = { passphrase : val  };
+    this.auth = function(url, username, password) {
 
-        $.ajax({
-            type       : "POST",
-            data       : formdata,
-            //url        : "https://editor:editor@sange-icinga.hukot.net/co-sc/check_pass.php",
-            url        : "https://editor:editor@10.0.0.38/co-sc/check_pass.php",
-            crossDomain: true,
-            beforeSend : function() {$.mobile.loading('show')},
-            complete   : function() {$.mobile.loading('hide')},
-            dataType   : 'json',
-            success    : function(response) {
-                alert(JSON.stringify(response));
-            },
-            error      : function(response) {
-                alert('Connection problem! ' + JSON.stringify(response));
+        var client = new $.RestClient(url);
+        client.add('login');
+
+        var req =  client.login.create({
+            email :  username,
+            password: password
+        });
+
+        req.done(function (data){
+            if(data.ws.error == false) {
+                apiKey = data.data.apiKey;
+                if(apiKey != null && apiKey != '') {
+                    alert('Logged in!: ' + apiKey);
+                    settings.ws.save(restConn.getApiKey(), url, username, password);
+                }
+            } else {
+                alert('Error: ' + data.ws.message);
             }
         });
 
-    },
+        req.fail(function(xhr, result, statusText){
+            alert('Error: Maybe wrong URL?');
+        });
 
-    isNetworkAvailable: function() {
-        var networkState = navigator.connection.type;
-        if(networkState != Connection.NONE) {
-            alert('Network is not available');
-        }
-    }
+    };
 
+    this.register = function(url, username, password, name) {
+
+        var client = new $.RestClient(url);
+        client.add('register');
+
+        var req =  client.register.create({
+            email :  username,
+            password: password,
+            name: name
+        });
+
+        req.done(function (data){
+            if(data.ws.error == false) {
+                alert('Successfully registered.');
+                $("#hidden_name").hide();
+                $("#submit_settings_ws").html('Login & Save');
+                if($('#ws_register').is(":checked")) {
+                    $('#ws_register').prop('checked', false).checkboxradio('refresh');
+                }
+            } else {
+                alert('Error: ' + data.ws.message);
+            }
+        });
+
+        req.fail(function(xhr, result, statusText){
+            alert('Error: Maybe wrong URL?');
+        });
+
+    };
+
+    this.getApiKey = function(){
+        return apiKey;
+    };
+
+    this.setApiKey = function(ak){
+        apiKey = ak;
+    };
 };
+
+var restConn = new RestConnector();

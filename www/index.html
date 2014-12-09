@@ -10,6 +10,10 @@
         <link rel="stylesheet" type="text/css" href="css/co-sc.css" />
         <link rel="stylesheet" type="text/css" href="css/lib/jquery.mobile-1.4.5.css" />
 
+        <script type="text/javascript" src="js/lib/jquery-2.1.1.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.mobile-1.4.5.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.rest.js"></script>
 
         <title>CorrectiveScripts</title>
 
@@ -17,20 +21,52 @@
     <body>
         <div class="app">
             <!-- This page will show first -->
+
+            <!--------------------------------------------------------------------->
+            <!-- UNLOCK APP -->
+            <div data-role="page" id="enterpin" data-position="fixed">
+                <div data-role="header" data-position="fixed" id="page_enterpin_header" >
+
+                    <h1>Unlock app</h1>
+
+                </div><!-- /header -->
+
+                <div data-role="content">
+                    <form action="" method="post" id="enterpin_form" novalidate="novalidate">
+
+                        <div data-role="fieldcontain">
+                            <label for="enterpin_pin">Passphrase: </label>
+                            <input type="password" name="enterpin_pin" id="enterpin_pin" />
+                            <label id="enterpin_pin_error" class="error" for="enterpin_pin"></label>
+                        </div>
+
+                        <div class="ui-grid-a ui-responsive">
+                            <div class="ui-block-a">
+                                <!--TODO popup na potvrzeni-->
+                                <a href="" data-role="button" data-icon="delete" data-iconpos="right" id="forget_pin">Forgotten</a>
+                            </div>
+                            <div class="ui-block-b">
+                                <a href="" data-role="button" data-icon="check" data-iconpos="right" id="submit_pin">Submit</a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+
             <div data-role="page" id="index" data-position="fixed">
 
                 <div data-role="header" data-position="fixed" id="index_header" >
                     <h1>Corrective Scripts</h1>
-                    <a href="" class="ui-btn-right" data-icon="gear" data-role="button" data-iconpos="notext"
-                       onclick="$.mobile.changePage($('#' + page.SETTINGS), util.transOpt);
-                       testy();"></a>
                 </div><!-- /header -->
 
-                <div data-role="content" class="ui-grid-b ui-responsive">
+                <div data-role="content" class="ui-grid-a ui-responsive">
                     <div class="ui-block-a">
                          <button data-corners="true" class="indexBtn" data-iconpos="top" data-icon="info"
-                             onclick="overview.checkIfUrlSet(); settings.load();
-                             $.mobile.changePage($('#' + page.OVERVIEW), util.transOpt)">
+                            onclick="overview.openOverview()"
+                                 >
                              Overview
                          </button>
                     </div>
@@ -40,13 +76,17 @@
                             Scripts
                         </button>
                     </div>
-                    <div class="ui-block-c">
+                    <div class="ui-block-a">
                         <button class="indexBtn" data-iconpos="top" data-icon="forward"
                                 onclick=" $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);">
                             Protocols
                         </button>
-                        <!--<button class="indexBtn" onclick=" testHTTP();">test req</button>-->
-                        <!--<p id="resp">No response</p>-->
+                    </div>
+                    <div class="ui-block-b">
+                        <button class="indexBtn" data-iconpos="top" data-icon="gear"
+                                onclick=" settings.load();">
+                            Settings
+                        </button>
                     </div>
                 </div><!-- /content -->
 
@@ -64,24 +104,6 @@
                 </div>
             </div>
 
-            <!--------------------------------------------------------------------->
-            <!-- OVERVIEW -->
-            <div data-role="page" id="page_overview" data-position="fixed">
-                <div data-role="header" data-position="fixed" id="page_overview_header" >
-                    <a href=""  data-icon="back" data-role="button" data-iconpos="notext"
-                       onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
-                    <h1>Devices overview</h1>
-                </div><!-- /header -->
-
-                <iframe width="100%" id="overview_frame"
-                        src="http://icinga.org"
-                        onload="util.resizeElement('overview_frame');">
-                </iframe>
-
-            </div>
-
-
-                <!--</div>-->
             <!--------------------------------------------------------------------->
             <!-- SCRIPTS -->
             <div data-role="page" id="page_scripts" data-position="fixed">
@@ -211,41 +233,59 @@
 
                 <div data-role="content" class="ui-grid-solo ui-responsive">
 
-                    <form action="php/db.php" method="post" id="settings_ws_form" novalidate="novalidate">
+                    <form method="post" id="settings_ws_form" novalidate="novalidate">
 
-                        <h4>Info</h4>
-                        <div data-role="fieldcontain">
-                            <label for="info_uuid">Device uuid: </label>
-                            <input type="text" readonly="" name="info_uuid" id="info_uuid"
-                                   onload="settings.info.setDeviceUUID();" />
-                        </div>
-
-                        <h4>Web Server connection</h4>
+                        <h4>Web Service connection</h4>
                         <div data-role="fieldcontain">
                             <label for="ws_url">URL: </label>
-                            <input type="text" name="ws_url" value="https://ss.ss" id="ws_url" placeholder="Monitoring system URL: http://" />
+                            <input type="text" name="ws_url" value="https://127.0.0.1/co-sc/v1/" id="ws_url" placeholder="Web service URL: http://" />
                             <label hidden="hidden" id="ws_url-error" class="error" for="ws_url"></label>
                         </div>
+
                         <div data-role="fieldcontain">
-                            <label for="ws_username">Username: </label>
-                            <input type="text" name="ws_username" value="vv" id="ws_username" placeholder="Username" />
+                            <fieldset data-role="controlgroup">
+                                <legend>Register :</legend>
+                                <input type="checkbox" name="ws_register" id="ws_register" data-mini="true" />
+                                <label for="ws_register">Create new account.</label>
+                            </fieldset>
+                        </div>
+
+                        <div data-role="fieldcontain" id="hidden_name" style="display: none;">
+                            <label for="ws_name">Name: </label>
+                            <input type="text" name="ws_name" value="" id="ws_name" placeholder="Name" />
+                            <label hidden="hidden" id="ws_name-error" class="error" for="ws_name"></label>
+                        </div>
+
+                        <div data-role="fieldcontain">
+                            <label for="ws_username">Email: </label>
+                            <input type="text" name="ws_username" value="sange@sange.cz" id="ws_username" placeholder="Email" />
                             <label hidden="hidden" id="ws_username-error" class="error" for="ws_username"></label>
                         </div>
                         <div data-role="fieldcontain">
                             <label for="ws_password">Password: </label>
-                            <input type="password" name="ws_password" value="vv" id="ws_password" placeholder="Password" />
+                            <input type="password" name="ws_password" value="" id="ws_password" placeholder="Password" />
                             <label hidden="hidden" id="ws_password-error" class="error" for="ws_password"></label>
                         </div>
 
                         <div data-role="fieldcontain">
-                            <a href="" data-role="button"  data-icon="check"
-                               data-iconpos="right" id="submit_settings_ws">Save</a>
+
+                        </div>
+
+                        <div class="ui-grid-a ui-responsive">
+                            <div class="ui-block-a">
+                                <a href="" data-role="button" data-icon="delete" data-iconpos="right" id="forget_pin"
+                                        onclick="settings.ws.del()">Delete</a>
+                            </div>
+                            <div class="ui-block-b">
+                                <a href="" data-role="button"  data-icon="check"
+                                   data-iconpos="right" id="submit_settings_ws">Login & Save</a>
+                            </div>
                         </div>
                     </form>
                 </div>
 
                 <div data-role="content" class="ui-grid-solo ui-responsive">
-                    <form action="php/db.php" method="post" id="settings_overview_form" novalidate="novalidate">
+                    <form method="post" id="settings_overview_form" novalidate="novalidate">
 
                         <h4>Monitoring tool connection</h4>
                         <div data-role="fieldcontain">
@@ -277,14 +317,18 @@
 
             </div>
         </div>
+        <script type="text/javascript">
+            function openNew(link) {
+                navigator.app.loadUrl(link, { 'openExternal' : true });
+            }
+        </script>
 
-        <script type="text/javascript" src="js/lib/jquery-2.1.1.js"></script>
-        <script type="text/javascript" src="js/lib/jquery.mobile-1.4.5.js"></script>
-        <script type="text/javascript" src="js/lib/jquery.validate.min.js"></script>
+
         <!--<script type="text/javascript" src="js/lib/crypto/enc-base64-min.js"></script>-->
         <script type="text/javascript" src="js/lib/crypto/tripledes.js"></script>
         <script type="text/javascript" src="js/lib/crypto/core-min.js"></script>
         <script type="text/javascript" src="js/lib/crypto/sha512.js"></script>
+        <script type="text/javascript" src="js/lib/ChildBrowser.js"></script>
 
         <script type="text/javascript" src="js/utils.js"></script>
         <script type="text/javascript" src="js/app.js"></script>

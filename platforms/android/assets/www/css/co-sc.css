@@ -28,3 +28,7 @@ h4 {
     height: 100%;
     width: 100%;
 }
+
+.ui-field-contain  .ui-slider-switch {
+    width: 100em
+}
