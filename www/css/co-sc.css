@@ -25,10 +25,12 @@ h4 {
 }
 
 #script_textarea {
-    height: 100%;
     width: 100%;
 }
-
-.ui-field-contain  .ui-slider-switch {
-    width: 100em
+.url_tooltip {
+    float: left;
+}
+.tooltip_secure_protocol {
+    font-size: small;
+    margin-bottom: 10px;
 }

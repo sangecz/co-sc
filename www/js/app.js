@@ -18,7 +18,7 @@ var app = {
     },
     // Bind Event Listeners
     bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
+        document.addEventListener('deviceready', app.onDeviceReady);
     },
 
     onDeviceReady: function() {
@@ -26,11 +26,14 @@ var app = {
     },
 
     receivedEvent: function(id) {
-        document.addEventListener("backbutton", this.onBackKeyDown, false);
+
         document.addEventListener("pause", this.onPauseApp);
         document.addEventListener("resume", this.onResumeApp);
+        document.addEventListener("backbutton", this.onBackKeyDown);
 
         $("#enterpin").trigger("pagecreate");
+
+        //alert(util.isOnline());
     },
 
     onBackKeyDown: function () {
@@ -59,11 +62,17 @@ var app = {
 
     onResumeApp : function() {
         setTimeout(function(){
+
             $.mobile.changePage($('#' + page.ENTERPIN), util.backTransOpt);
+            $( "#unlock_hedline" ).html('Unlock app');
+            $( "#submit_pin" ).html('Unlock');
             $('#enterpin_pin').val('');
         }, 0);
     }
 };
 
 app.initialize();
+
+
+
 

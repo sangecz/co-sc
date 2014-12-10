@@ -7,6 +7,8 @@
 /home/sange/projects/android/co-sc/platforms/android/ant-build/classes/cz/sange/cosc/R$xml.class \
 /home/sange/projects/android/co-sc/platforms/android/ant-build/classes/cz/sange/cosc/CordovaApp.class \
 /home/sange/projects/android/co-sc/platforms/android/ant-build/classes/cz/sange/cosc/R$drawable.class \
+/home/sange/projects/android/co-sc/platforms/android/ant-build/classes/org/apache/cordova/networkinformation/NetworkManager$1.class \
+/home/sange/projects/android/co-sc/platforms/android/ant-build/classes/org/apache/cordova/networkinformation/NetworkManager.class \
 /home/sange/projects/android/co-sc/platforms/android/ant-build/classes/org/apache/cordova/inappbrowser/InAppBrowser$InAppBrowserClient.class \
 /home/sange/projects/android/co-sc/platforms/android/ant-build/classes/org/apache/cordova/inappbrowser/InAppBrowser$5.class \
 /home/sange/projects/android/co-sc/platforms/android/ant-build/classes/org/apache/cordova/inappbrowser/InAppBrowser$4.class \

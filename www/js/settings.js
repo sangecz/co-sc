@@ -4,19 +4,11 @@
 
 var settings = {
 
-    info: {
-        setDeviceUUID: function(){
-            $('#info_uuid').val(device.uuid);
-            alert(device.uuid);
-        }
-    },
-
     overview : {
 
         URL_ID : "overview_url",
         USERNAME_ID : "overview_username",
         PASSWORD_ID : "overview_password",
-        IFRAME_ID : "overview_frame",
 
         STORAGE_KEY : "overview",
 
@@ -26,34 +18,27 @@ var settings = {
             username : ''
         },
 
-        save : function (){
+        save : function () {
             this.storageObject = {};
             this.storageObject.url = $('#' + this.URL_ID).val();
             this.storageObject.username = $('#' + this.USERNAME_ID).val();
             this.storageObject.password = $('#' + this.PASSWORD_ID).val();
 
-            // icinga classic
-            // TODO ICINGA WEB 2
-            var prefix = "";
-            if(/^http:\/\//.test(this.storageObject.url)) {
-                prefix = "//";
+            if(secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY)) {
+                util.toast('Saved');
             }
-            if(/^https:\/\//.test(this.storageObject.url)) {
-                prefix = "//";
-            }
-
-            overview.url = this.storageObject.url;
-
-            secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY);
         },
 
-        load : function (){
-            this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
+        del : function () {
+            this.clearValues();
+            util.storage.removeItem(settings.overview.STORAGE_KEY);
+        },
 
+        load : function () {
+
+            this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
             if (this.storageObject == null){
-                $('#' + this.URL_ID).val('');
-                $('#' + this.USERNAME_ID).val('');
-                $('#' + this.PASSWORD_ID).val('');
+                this.clearValues();
             } else if(this.storageObject != null && typeof this.storageObject.url != util.UNDEF && typeof this.storageObject.username != util.UNDEF
                 && typeof this.storageObject.password != util.UNDEF) {
 
@@ -62,8 +47,17 @@ var settings = {
                 $('#' + this.PASSWORD_ID).val(this.storageObject.password);
 
                 overview.url = this.storageObject.url;
+                overview.username = this.storageObject.username;
+                overview.password = this.storageObject.password;
             }
+        },
+
+        clearValues : function(){
+            $('#' + this.URL_ID).val('');
+            $('#' + this.USERNAME_ID).val('');
+            $('#' + this.PASSWORD_ID).val('');
         }
+
     },
 
     ws : {
@@ -83,16 +77,20 @@ var settings = {
             username : ''
         },
 
-        save : function(apiKey, url, username, password){
+        save : function(apiKey, url, username, password) {
             this.storageObject = {};
             this.storageObject.url = url;
             this.storageObject.username = username;
             this.storageObject.password = password;
             this.storageObject.apikey = apiKey;
-            secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY);
+
+            if(secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY)) {
+                util.toast('Saved');
+            }
+
         },
 
-        load : function(){
+        load : function() {
             this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
 
             if (this.storageObject == null){
@@ -107,9 +105,8 @@ var settings = {
             }
         },
 
-        del : function (){
+        del : function () {
             this.clearValues();
-
             util.storage.removeItem(settings.ws.STORAGE_KEY);
         },
 
@@ -128,7 +125,7 @@ var settings = {
             }
         },
 
-        clearValues : function(){
+        clearValues : function() {
             $('#' + this.URL_ID).val('');
             $('#' + this.USERNAME_ID).val('');
             $('#' + this.NAME_ID).val('');
@@ -137,30 +134,62 @@ var settings = {
 
     },
 
+    del : function() {
+        this.overview.del();
+        this.ws.del();
+
+        $( "#dialog_delete_settings" ).popup( "close" );
+    },
+
     save : function() {
         //$.mobile.changePage($('#' + page.INDEX), util.backTransOpt);
     },
 
     load : function() {
-        $.mobile.changePage($('#' + page.SETTINGS), util.transOpt);
 
+        $("#settings_content_1").show();
+        $("#settings_content_2").hide();
+        $('#settings_navbtn_1').addClass('ui-btn-active');
+        $('#settings_navbtn_2').removeClass('ui-btn-active');
+
+        $.mobile.changePage($('#' + page.SETTINGS), util.transOpt);
         this.overview.load();
         this.ws.load();
     }
 
-
-
 };
 
-$('#ws_register').on('click', function(){
+// enable registration
+$('#ws_register').on('click', function() {
     if($(this).is(':checked')){
-        $("#hidden_name").show();
+        $("#ws_hidden_name").show();
         $("#submit_settings_ws").html('Register');
     } else {
-        $("#hidden_name").hide();
+        $("#ws_hidden_name").hide();
         $("#submit_settings_ws").html('Login & Save');
     }
 });
+
+// handle navbar in settings
+$('#settings_navbtn_1').on('click', function() {
+    $("#settings_content_1").show();
+    $("#settings_content_2").hide();
+    $(this).addClass('ui-btn-active');
+    $('#settings_navbtn_2').removeClass('ui-btn-active');
+});
+
+$('#settings_navbtn_2').on('click', function() {
+    $("#settings_content_2").show();
+    $("#settings_content_1").hide();
+    $(this).addClass('ui-btn-active');
+    $('#settings_navbtn_1').removeClass('ui-btn-active');
+});
+
+$('.tooltip_secure_protocol').on('click', function(){
+    $(this).hide();
+});
+
+
 
 /** based on: http://www.sitepoint.com/basic-jquery-form-validation-tutorial/ */
 (function($,W,D) {
@@ -217,7 +246,7 @@ $('#ws_register').on('click', function(){
                     settings.ws.handleSubmit();
                 }
             });
-            $("#submit_settings_ws").click(function(){
+            $("#submit_settings_ws").click(function() {
                 $("#settings_ws_form").submit();
                 return false;
             });
@@ -237,15 +266,10 @@ $('#ws_register').on('click', function(){
                 },
                 submitHandler: function(form) {
                     secStorage.submitPass();
-
                 }
             });
             $("#submit_pin").click(function(){
                 $("#enterpin_form").submit();
-                return false;
-            });
-            $("#forget_pin").click(function(){
-                secStorage.forgetPass();
                 return false;
             });
         }

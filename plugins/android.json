@@ -9,23 +9,11 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"HttpRequest\"><param name=\"android-package\" value=\"plugin.http.request.HttpRequest\" /></feature>",
+                            "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
                             "count": 1
                         },
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"MacAddressPlugin\"><param name=\"android-package\" value=\"com.badrit.MacAddress.MacAddressPlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -43,10 +31,6 @@
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
                             "count": 1
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
-                            "count": 1
                         }
                     ]
                 }
@@ -54,22 +38,10 @@
         }
     },
     "installed_plugins": {
-        "plugin.http.request": {
+        "org.apache.cordova.inappbrowser": {
             "PACKAGE_NAME": "cz.sange.cosc"
         },
         "org.apache.cordova.network-information": {
-            "PACKAGE_NAME": "cz.sange.cosc"
-        },
-        "org.apache.cordova.console": {
-            "PACKAGE_NAME": "cz.sange.cosc"
-        },
-        "com.badrit.MacAddress": {
-            "PACKAGE_NAME": "cz.sange.cosc"
-        },
-        "org.apache.cordova.device": {
-            "PACKAGE_NAME": "cz.sange.cosc"
-        },
-        "org.apache.cordova.inappbrowser": {
             "PACKAGE_NAME": "cz.sange.cosc"
         }
     },

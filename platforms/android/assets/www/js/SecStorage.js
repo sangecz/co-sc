@@ -7,16 +7,30 @@ var secStorage = {
     instance : util.UNDEF,
 
     forgetPass : function() {
-        $('#enterpin_pin').val('');
+
         util.storage.removeItem(secStorage.HASHED_PASS_KEY);
+        util.storage.removeItem(settings.ws.STORAGE_KEY);
+        util.storage.removeItem(settings.overview.STORAGE_KEY);
+
         if(this.instance != util.UNDEF){
             this.instance.removePass();
         }
-        alert('Passphrase deleted, enter new one.');
+
+        this.setForgetPassProp();
+
+        util.toast('Passphrase has been deleted. Please, enter new one.');
     },
 
     submitPass : function() {
         this.instance = new SecStorage($('#enterpin_pin').val());
+    },
+
+    setForgetPassProp: function(){
+        $('#enterpin_pin').val('');
+        $( "#dialog_unlock_forget" ).popup( "close" );
+        $( "#unlock_hedline" ).html('Enter new passphrase');
+        $( "#unlock_hedline" ).css('width', '10em');
+        $( "#submit_pin" ).html('Enter');
     }
 };
 
@@ -34,10 +48,12 @@ SecStorage = function (pass) {
             _passSet = true;
             $.mobile.changePage($('#' + page.INDEX), util.transOpt);
         } else {
+            util.toast('Wrong passphrase.');
             $('#enterpin_pin').val('');
         }
     } else {
         // newly entered
+        util.toast('New passphrase created.');
         util.storage.setItem(secStorage.HASHED_PASS_KEY, hash);
         _pass = pass;
         _passSet = true;
@@ -48,7 +64,9 @@ SecStorage = function (pass) {
         if (typeof _passSet != util.UNDEF && _passSet == true) {
             var encrypted = CryptoJS.TripleDES.encrypt(JSON.stringify(json), _pass);
             util.storage.setItem(key, encrypted);
+            return true
         }
+        return false
     };
 
     this.loadFromStorage = function (key) {
@@ -56,27 +74,14 @@ SecStorage = function (pass) {
 
         if (typeof _passSet != util.UNDEF && _passSet == true && encrypted != null) {
             var decrypted = CryptoJS.TripleDES.decrypt(encrypted, _pass);
-            return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+            if(decrypted != null && decrypted != '') {
+                return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+            } else {
+                return null;
+            }
         }
         return null;
     };
-
-    //this.isPassSet = function () {
-    //    if (typeof _passSet != util.UNDEF && _passSet == true) {
-    //        return true;
-    //    }
-    //    return false;
-    //};
-    //
-    //this.unSetPass = function () {
-    //    _passSet = false;
-    //    _pass = util.UNDEF;
-    //};
-    //
-    //this.setPass= function (pass) {
-    //    _passSet = true;
-    //    _pass = CryptoJS.SHA512(pass);
-    //};
 
     this.removePass = function () {
         _pass = util.UNDEF;

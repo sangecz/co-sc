@@ -8,31 +8,46 @@
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/co-sc.css" />
-        <link rel="stylesheet" type="text/css" href="css/lib/jquery.mobile-1.4.5.css" />
 
-        <script type="text/javascript" src="js/lib/jquery-2.1.1.js"></script>
-        <script type="text/javascript" src="js/lib/jquery.mobile-1.4.5.js"></script>
-        <script type="text/javascript" src="js/lib/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="js/lib/jquery.rest.js"></script>
+        <link rel="stylesheet" type="text/css" href="lib/jquery/jquery.mobile-1.4.5.css" />
+        <!--<link rel="stylesheet" type="text/css" href="lib/jquery/jquery.mobile.inline-png-1.4.5.min.css" />-->
+        <script type="text/javascript" src="lib/jquery/jquery-2.1.1.js"></script>
+        <script type="text/javascript" src="lib/jquery/jquery.mobile-1.4.5.js"></script>
+        <script type="text/javascript" src="lib/jquery/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="lib/jquery/jquery.rest.min.js"></script>
 
         <title>CorrectiveScripts</title>
 
     </head>
     <body>
+
+<!--<script type="text/javascript">-->
+
+    <!--document.addEventListener('deviceready', onDeviceReady);-->
+
+    <!--function onDeviceReady () {-->
+        <!--alert('TEST');-->
+
+    <!--}-->
+
+<!--</script>-->
+
         <div class="app">
             <!-- This page will show first -->
 
-            <!--------------------------------------------------------------------->
             <!-- UNLOCK APP -->
             <div data-role="page" id="enterpin" data-position="fixed">
                 <div data-role="header" data-position="fixed" id="page_enterpin_header" >
 
-                    <h1>Unlock app</h1>
+                    <h1 id="unlock_hedline">Unlock app</h1>
+                    <a href="#dialog_unlock_forget" style="float: right" data-icon="lock"
+                       data-role="button" data-iconpos="notext" data-rel="popup" data-position-to="window"
+                       data-inline="true" data-transition="pop" ></a>
 
                 </div><!-- /header -->
 
                 <div data-role="content">
-                    <form action="" method="post" id="enterpin_form" novalidate="novalidate">
+                    <form method="post" id="enterpin_form" novalidate="novalidate">
 
                         <div data-role="fieldcontain">
                             <label for="enterpin_pin">Passphrase: </label>
@@ -40,16 +55,33 @@
                             <label id="enterpin_pin_error" class="error" for="enterpin_pin"></label>
                         </div>
 
-                        <div class="ui-grid-a ui-responsive">
-                            <div class="ui-block-a">
-                                <a href="" data-role="button" data-icon="delete" data-iconpos="right" id="forget_pin">Forgotten</a>
-                            </div>
-                            <div class="ui-block-b">
-                                <a href="" data-role="button" data-icon="check" data-iconpos="right" id="submit_pin">Submit</a>
+                        <div class="ui-grid-solo ui-responsive">
+                              <div class="ui-block-a">
+                                <a href="" data-role="button" data-icon="check" data-iconpos="right"
+                                   id="submit_pin">Unlock</a>
                             </div>
                         </div>
 
                     </form>
+                </div>  <!--CONTENT -->
+                <!-- POPUP -->
+                <div data-role="popup" id="dialog_unlock_forget" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1 style="width: 9em;">Delete passphrase?</h1>
+                    </div>
+                    <div data-role="content" class="ui-corner-bottom ui-content">
+                        <h4 class="ui-title">Are you sure you want to delete your passphrase?</h4>
+                        <p>This affects saved URLs and credentials for both Web Service and Monitoring. After that
+                            you will have to fill them again.
+                        </p>
+                        <p>
+                            This mechanism prevents unwanted access to your credentials. After deleting the passphrase
+                            you must set a new one.
+                        </p>
+                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                        <a href="" data-role="button" data-inline="true" data-transition="flow" style="float: right;"
+                           data-theme="c" onclick=" secStorage.forgetPass(); ">Delete</a>
+                    </div>
                 </div>
 
             </div>
@@ -59,16 +91,14 @@
 
                 <div data-role="header" data-position="fixed" id="index_header" >
                     <h1>Corrective Scripts</h1>
-                    <a href="" class="ui-btn-right" data-icon="gear" data-role="button" data-iconpos="notext"
-                       onclick=" settings.load(); "></a>
                 </div><!-- /header -->
 
-                <div data-role="content" class="ui-grid-b ui-responsive">
+                <div data-role="content" class="ui-grid-a ui-responsive">
                     <div class="ui-block-a">
-                         <button data-corners="true" class="indexBtn" data-iconpos="top" data-icon="info"
-                            onclick="overview.openOverview()"
+                         <button data-corners="true" class="indexBtn" data-iconpos="top" data-icon="eye"
+                            onclick="overview.openOverview();"
                                  >
-                             Overview
+                             Monitoring
                          </button>
                     </div>
                     <div class="ui-block-b">
@@ -77,29 +107,21 @@
                             Scripts
                         </button>
                     </div>
-                    <div class="ui-block-c">
-                        <button class="indexBtn" data-iconpos="top" data-icon="forward"
+                    <div class="ui-block-a">
+                        <button class="indexBtn" data-iconpos="top" data-icon="action"
                                 onclick=" $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);">
                             Protocols
                         </button>
                     </div>
+                    <div class="ui-block-b">
+                        <button class="indexBtn" data-iconpos="top" data-icon="gear"
+                                onclick=" settings.load();">
+                            Settings
+                        </button>
+                    </div>
                 </div><!-- /content -->
-
-                <!-- POPUP -->
-                <div data-role="popup" id="pin_dialog" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
-                    <div data-role="header" data-theme="a" class="ui-corner-top">
-                        <h1>PIN</h1>
-                    </div>
-                    <div data-role="content" class="ui-corner-bottom ui-content">
-                        <h3 class="ui-title">Enter your passphrase for secure storage.</h3>
-                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
-                        <a href="" data-role="button" data-inline="true" data-transition="flow"
-                           data-theme="c" onclick="secStorage.setPin()">Save</a>
-                    </div>
-                </div>
             </div>
 
-            <!--------------------------------------------------------------------->
             <!-- SCRIPTS -->
             <div data-role="page" id="page_scripts" data-position="fixed">
 
@@ -130,14 +152,14 @@
                     <div data-role="header" data-position="fixed" id="page_scripts_edit_header" >
                         <a href="" data-icon="back" data-role="button" data-iconpos="notext"
                            onclick=" $.mobile.changePage($('#' + page.SCRIPTS), util.backTransOpt);"></a>
-                        <h1></h1>
+                        <h1>dummy</h1>
                         <a href=""  data-icon="check" data-role="button" data-iconpos="notext"
                            onclick=" $('#script_edit_form').submit(); "></a>
 
                     </div><!-- /header -->
 
                     <div data-role="content">
-                        <form action="" method="post" id="script_edit_form" novalidate="novalidate">
+                        <form method="post" id="script_edit_form" novalidate="novalidate">
 
                             <div data-role="fieldcontain">
                                 <label for="script_edit_name">Name: </label>
@@ -156,7 +178,7 @@
                             </div>
                             <div data-role="fieldcontain">
                                 <label for="script_edit_protocol">Protocol: </label>
-                                <select name="script_edit_protocol" id="script_edit_protocol">
+                                <select name="script_edit_protocol" id="script_edit_protocol" data-inline="true">
                                     <option>dummy</option>
                                     <option>dummy</option>
                                     <option>dummy</option>
@@ -173,15 +195,15 @@
                     </div><!-- /content -->
 
                     <!-- POPUP -->
-                    <div data-role="popup" id="confirm_dialog" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="popup" id="dialog_delete_script" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
                         <div data-role="header" data-theme="a" class="ui-corner-top">
                             <h1>Delete script?</h1>
                         </div>
                         <div data-role="content" class="ui-corner-bottom ui-content">
-                            <h3 class="ui-title">Are you sure you want to delete this script?</h3>
+                            <h4 class="ui-title">Are you sure you want to delete this script?</h4>
                             <p>This action cannot be undone.</p>
                             <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
-                            <a href="" data-role="button" data-inline="true" data-transition="flow"
+                            <a href="" data-role="button" data-inline="true" data-transition="flow" style="float: right;"
                                data-theme="c" onclick="script.del();">Delete</a>
                         </div>
                     </div>
@@ -189,7 +211,7 @@
                     <div data-role="footer"  data-position="fixed" id="script_edit_footer">
                         <!--<a href=""  data-icon="edit" data-role="button" data-iconpos="notext"-->
                            <!--onclick=""></a>-->
-                        <a href="#confirm_dialog" id="script_delete" style="margin-left: 5px;" data-icon="delete"
+                        <a href="#dialog_delete_script" id="script_delete" style="margin-left: 5px;" data-icon="delete"
                            data-role="button" data-iconpos="notext" data-rel="popup" data-position-to="window"
                            data-inline="true" data-transition="pop" ></a>
 
@@ -197,7 +219,6 @@
 
                 </div>
 
-            <!--------------------------------------------------------------------->
             <!-- PROTOCOLS -->
             <div data-role="page" id="page_protocols" data-position="fixed">
 
@@ -215,115 +236,140 @@
                     <h3>Footer Text</h3>
                 </div>
             </div>
-            <!--------------------------------------------------------------------->
+
+
+
+
             <!-- SETTINGS -->
+
             <div data-role="page" id="page_settings" data-position="fixed">
 
                 <div data-role="header" data-position="fixed" id="page_settings_header" >
                     <a href=""  data-icon="back" data-iconpos="notext"
                        onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
                     <h1>Settings</h1>
-                       <!--onclick="$('settings_form').submit();"></a>-->
+                    <a href="#dialog_delete_settings" data-icon="delete"
+                       data-role="button" data-iconpos="notext" data-rel="popup" data-position-to="window"
+                       data-inline="true" data-transition="pop" ></a>
                 </div><!-- /header -->
 
-                <div data-role="content" class="ui-grid-solo ui-responsive">
+                <!-- POPUP -->
+                <div data-role="popup" id="dialog_delete_settings" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Clear settings?</h1>
+                    </div>
+                    <div data-role="content" class="ui-corner-bottom ui-content">
+                        <h4 class="ui-title">Are you sure you want to clear these settings from your device?</h4>
+                        <p>This affects saved URLs and credentials for both Web Service and Monitoring. After that
+                            you will have to fill them again.</p>
+                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                        <a href="" data-role="button" data-inline="true" data-transition="flow" style="float: right;"
+                           data-theme="c" onclick="settings.del();">Clear settings</a>
+                    </div>
+                </div>
 
+                <div data-role="content" id="settings_content_1">
                     <form method="post" id="settings_ws_form" novalidate="novalidate">
+                        <div class="ui-grid-solo ui-responsive">
+                            <h4>Web Service connection</h4>
 
-                        <h4>Web Service connection</h4>
-                        <div data-role="fieldcontain">
-                            <label for="ws_url">URL: </label>
-                            <input type="text" name="ws_url" value="https://127.0.0.1/co-sc/v1/" id="ws_url" placeholder="Web service URL: http://" />
-                            <label hidden="hidden" id="ws_url-error" class="error" for="ws_url"></label>
-                        </div>
+                            <span class="tooltip_secure_protocol">It's recommended to use secure protocol (eg. https).</span>
 
-                        <div data-role="fieldcontain">
-                            <fieldset data-role="controlgroup">
-                                <legend>Register :</legend>
+                            <div data-role="fieldcontain" id="ws_hidden_url">
+                                <label for="ws_url">URL: </label>
+                                <input type="text" name="ws_url" value="https://127.0.0.1/co-sc/v1/" id="ws_url" placeholder="Web service URL: http://" />
+                                <label hidden="hidden" id="ws_url-error" class="error" for="ws_url"></label>
+                            </div>
+
+                            <div data-role="fieldcontain">
+                                <fieldset data-role="controlgroup">
+                                <legend style="margin-left: -2px">Register :</legend>
                                 <input type="checkbox" name="ws_register" id="ws_register" data-mini="true" />
                                 <label for="ws_register">Create new account.</label>
-                            </fieldset>
-                        </div>
-
-                        <div data-role="fieldcontain" id="hidden_name" style="display: none;">
-                            <label for="ws_name">Name: </label>
-                            <input type="text" name="ws_name" value="" id="ws_name" placeholder="Name" />
-                            <label hidden="hidden" id="ws_name-error" class="error" for="ws_name"></label>
-                        </div>
-
-                        <div data-role="fieldcontain">
-                            <label for="ws_username">Email: </label>
-                            <input type="text" name="ws_username" value="sange@sange.cz" id="ws_username" placeholder="Email" />
-                            <label hidden="hidden" id="ws_username-error" class="error" for="ws_username"></label>
-                        </div>
-                        <div data-role="fieldcontain">
-                            <label for="ws_password">Password: </label>
-                            <input type="password" name="ws_password" value="" id="ws_password" placeholder="Password" />
-                            <label hidden="hidden" id="ws_password-error" class="error" for="ws_password"></label>
-                        </div>
-
-                        <div data-role="fieldcontain">
-
-                        </div>
-
-                        <div class="ui-grid-a ui-responsive">
-                            <div class="ui-block-a">
-                                <a href="" data-role="button" data-icon="delete" data-iconpos="right" id="forget_pin"
-                                        onclick="settings.ws.del()">Delete</a>
+                                </fieldset>
+                                <label hidden="hidden" id="ws_re-error" class="error" for="ws_register"></label>
                             </div>
-                            <div class="ui-block-b">
+
+                            <div data-role="fieldcontain" id="ws_hidden_name" style="display: none">
+                                <label for="ws_name">Name: </label>
+                                <input type="text" name="ws_name" value="" id="ws_name" placeholder="Name" />
+                                <label hidden="hidden" id="ws_name-error" class="error" for="ws_name"></label>
+                            </div>
+
+                            <div data-role="fieldcontain" id="ws_hidden_username">
+                                <label for="ws_username">Email: </label>
+                                <input type="text" name="ws_username" value="sange@sange.cz" id="ws_username" placeholder="Email" />
+                                <label hidden="hidden" id="ws_username-error" class="error" for="ws_username"></label>
+                            </div>
+                            <div data-role="fieldcontain" id="ws_hidden_password" >
+                                <label for="ws_password">Password: </label>
+                                <input type="password" name="ws_password" value="" id="ws_password" placeholder="Password" />
+                                <label hidden="hidden" id="ws_password-error" class="error" for="ws_password"></label>
+                            </div>
+
+                            <div class="ui-block-a" id="ws_hidden_submit">
                                 <a href="" data-role="button"  data-icon="check"
-                                   data-iconpos="right" id="submit_settings_ws">Login & Save</a>
+                                       data-iconpos="right" id="submit_settings_ws">Login & Save</a>
                             </div>
                         </div>
                     </form>
                 </div>
 
-                <div data-role="content" class="ui-grid-solo ui-responsive">
+                <div data-role="content" id="settings_content_2" style="display: none">
+
                     <form method="post" id="settings_overview_form" novalidate="novalidate">
+                        <div class="ui-grid-solo ui-responsive">
+                            <h4>Monitoring tool connection</h4>
 
-                        <h4>Monitoring tool connection</h4>
-                        <div data-role="fieldcontain">
-                            <label for="overview_url">URL: </label>
-                            <input type="text" name="overview_url" value="http://" id="overview_url" placeholder="Monitoring system URL: http://" />
-                            <label hidden="hidden" id="overview_url-error" class="error" for="overview_url"></label>
-                        </div>
-                        <div data-role="fieldcontain">
-                            <label for="overview_username">Username: </label>
-                            <input type="text" name="overview_username" value="" id="overview_username" placeholder="Username" />
-                            <label hidden="hidden" id="overview_username-error" class="error" for="overview_username"></label>
-                        </div>
-                        <div data-role="fieldcontain">
-                            <label for="overview_password">Password: </label>
-                            <input type="password" name="overview_password" value="" id="overview_password" placeholder="Password" />
-                            <label hidden="hidden" id="overview_password-error" class="error" for="overview_password"></label>
-                        </div>
+                            <span class="tooltip_secure_protocol">It's recommended to use secure protocol (eg. https).</span>
 
-                        <div data-role="fieldcontain">
-                            <a href="" data-role="button" data-icon="check" data-iconpos="right" id="submit_settings_overview">Save</a>
-                        </div>
+                            <div data-role="fieldcontain" id="overview_hidden_url">
+                                <label for="overview_url">URL: </label>
+                                <input type="text" name="overview_url" value="https://" id="overview_url" placeholder="Monitoring system URL" />
+                                 <label hidden="hidden" id="overview_url-error" class="error" for="overview_url"></label>
+                            </div>
+                            <div data-role="fieldcontain" id="overview_hidden_username" >
+                                <label for="overview_username">Username: </label>
+                                <input type="text" name="overview_username" value="" id="overview_username" placeholder="Username" />
+                                <label hidden="hidden" id="overview_username-error" class="error" for="overview_username"></label>
+                            </div>
+                            <div data-role="fieldcontain" id="overview_hidden_password" >
+                                <label for="overview_password">Password: </label>
+                                <input type="password" name="overview_password" value="" id="overview_password" placeholder="Password" />
+                                <label hidden="hidden" id="overview_password-error" class="error" for="overview_password"></label>
+                            </div>
 
+                            <div data-role="fieldcontain" id="overview_hidden_submit">
+                                <a href="" data-role="button" data-icon="check" data-iconpos="right" id="submit_settings_overview">Save</a>
+                            </div>
+                        </div>
                     </form>
-                    <!-- POPUP -->
-
                 </div><!-- /content -->
 
+                <div data-role="footer"  data-position="fixed" >
 
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a href="#" id="settings_navbtn_1" data-iconpos="top"
+                                   data-icon="cloud">Web Service</a></li>
+                            <!--<li><a href="#">Register</a></li>-->
+                            <li><a href="#" id="settings_navbtn_2" data-iconpos="top"
+                                   data-icon="eye">Monitoring</a></li>
+                        </ul>
 
+                    </div><!-- /navbar -->
+
+                </div>
             </div>
-        </div>
-        <script type="text/javascript">
-            function openNew(link) {
-                navigator.app.loadUrl(link, { 'openExternal' : true });
-            }
-        </script>
 
+
+        </div>
 
         <!--<script type="text/javascript" src="js/lib/crypto/enc-base64-min.js"></script>-->
-        <script type="text/javascript" src="js/lib/crypto/tripledes.js"></script>
-        <script type="text/javascript" src="js/lib/crypto/core-min.js"></script>
-        <script type="text/javascript" src="js/lib/crypto/sha512.js"></script>
-        <script type="text/javascript" src="js/lib/ChildBrowser.js"></script>
+        <script type="text/javascript" src="lib/crypto/tripledes.js"></script>
+        <script type="text/javascript" src="lib/crypto/core-min.js"></script>
+        <script type="text/javascript" src="lib/crypto/sha512.js"></script>
+        <!--<script type="text/javascript" src="js/lib/ChildBrowser.js"></script>-->
 
         <script type="text/javascript" src="js/utils.js"></script>
         <script type="text/javascript" src="js/app.js"></script>
