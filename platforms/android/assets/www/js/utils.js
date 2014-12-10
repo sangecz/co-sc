@@ -56,8 +56,10 @@ var util = {
 
         if(networkState != Connection.UNKNOWN && networkState != Connection.NONE) {
             return true;
+        } else {
+            util.toast('Offline. Could not proceed.');
+            return false;
         }
-        return false;
     }
 
 };

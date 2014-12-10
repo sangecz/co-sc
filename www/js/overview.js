@@ -1,15 +1,15 @@
 var overview = {
 
-    url : util.UNDEF,
-    username : util.UNDEF,
-    password : util.UNDEF,
+    url : null,
+    username : null,
+    password : null,
 
     openOverview : function () {
 
         settings.overview.load();
 
         if (util.isOnline()) {
-            if (this.url != util.UNDEF && this.username != util.UNDEF && this.password != util.UNDEF) {
+            if (this.url != null && this.username != null && this.password != null) {
                 var url = this.getHttpBasicAuthUrl();
                 window.open(url, '_blank', 'location=no');
             } else {

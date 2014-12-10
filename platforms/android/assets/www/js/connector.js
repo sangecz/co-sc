@@ -4,9 +4,64 @@
 
 
 RestConnector = function() {
-    var apiKey = util.UNDEF;
+
+    var authOpts = {
+        apiKey : null
+    };
+
+    this.runScript = function(url, id) {
+        $.mobile.loading('show');
+
+        var client = new $.RestClient(url, authOpts);
+        client.add('scripts');
+
+        if(util.isOnline()) {
+            var req = client.scripts.read(id);
+
+            req.done(function (data) {
+                if (data.ws.error == false) {
+                    script.showResult(data);
+                } else {
+                    util.toast('Error: ' + data.ws.message);
+                }
+                $.mobile.loading('hide');
+                client = null;
+            });
+
+            req.fail(function(x, y, y){
+                restConn.failHandler(client);
+            });
+        }
+    };
+
+    this.readScripts = function (url) {
+        $.mobile.loading('show');
+
+        var client = new $.RestClient(url, authOpts);
+        client.add('scripts');
+
+        if(util.isOnline()) {
+            var req = client.scripts.read();
+
+            req.done(function (data) {
+                if (data.ws.error == false) {
+                    script.refreshItems(data.data.scripts);
+                } else {
+                    util.toast('Error: ' + data.ws.message);
+                }
+                $.mobile.loading('hide');
+                client = null;
+            });
+
+            req.fail(function(x, y, y){
+                restConn.failHandler(client);
+            });
+        }
+    };
 
     this.auth = function(url, username, password) {
+
+        $.mobile.loading('show');
 
         var client = new $.RestClient(url);
         client.add('login');
@@ -19,25 +74,29 @@ RestConnector = function() {
 
             req.done(function (data) {
                 if (data.ws.error == false) {
-                    apiKey = data.data.apiKey;
-                    if (apiKey != null && apiKey != '') {
-                        alert('Logged in!: ' + apiKey);
-                        settings.ws.save(restConn.getApiKey(), url, username, password);
+                    // stays saved until first restart, must be loaded
+                    authOpts.apiKey = data.data.apiKey;
+                    if (authOpts.apiKey != null && authOpts.apiKey != '') {
+                        //alert('Logged in!: ' + authOpts.apiKey);
+                        settings.ws.save(authOpts.apiKey, url, username, password);
                     }
                 } else {
-                    alert('Error: ' + data.ws.message);
+                    util.toast('Error: ' + data.ws.message);
                 }
+                $.mobile.loading('hide');
+                client = null;
+
             });
 
-            req.fail(function (xhr, result, statusText) {
-                alert('Error: Maybe wrong URL?');
+            req.fail(function(x, y, y){
+                restConn.failHandler(client);
             });
-        } else {
-            util.toast('Offline. Could not proceed.');
         }
     };
 
     this.register = function(url, username, password, name) {
+
+        $.mobile.loading('show');
 
         var client = new $.RestClient(url);
         client.add('register');
@@ -58,24 +117,26 @@ RestConnector = function() {
                         $('#ws_register').prop('checked', false).checkboxradio('refresh');
                     }
                 } else {
-                    alert('Error: ' + data.ws.message);
+                    util.toast('Error: ' + data.ws.message);
                 }
+                $.mobile.loading('hide');
+                client = null;
             });
 
-            req.fail(function (xhr, result, statusText) {
-                alert('Error: Maybe wrong URL?');
+            req.fail(function(x, y, y){
+                restConn.failHandler(client);
             });
-        } else {
-            util.toast('Offline. Could not proceed.');
         }
     };
 
-    this.getApiKey = function(){
-        return apiKey;
+    this.setApiKey = function (apikey) {
+       authOpts.apiKey = apikey;
     };
 
-    this.setApiKey = function(ak){
-        apiKey = ak;
+    this.failHandler = function (client) {
+        util.toast('Error: Maybe wrong URL?');
+        $.mobile.loading('hide');
+        client = null;
     };
 };
 

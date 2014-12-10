@@ -34,3 +34,7 @@ h4 {
     font-size: small;
     margin-bottom: 10px;
 }
+
+#dialog_script_result {
+    max-height: 400px !important;
+}

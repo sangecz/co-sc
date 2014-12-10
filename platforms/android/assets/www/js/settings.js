@@ -13,9 +13,9 @@ var settings = {
         STORAGE_KEY : "overview",
 
         storageObject : {
-            url : '',
-            password : '',
-            username : ''
+            url : null,
+            password : null,
+            username : null
         },
 
         save : function () {
@@ -39,8 +39,8 @@ var settings = {
             this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
             if (this.storageObject == null){
                 this.clearValues();
-            } else if(this.storageObject != null && typeof this.storageObject.url != util.UNDEF && typeof this.storageObject.username != util.UNDEF
-                && typeof this.storageObject.password != util.UNDEF) {
+            } else if(this.storageObject != null && this.storageObject.url != null
+                && this.storageObject.username != null && this.storageObject.password != null) {
 
                 $('#' + this.URL_ID).val(this.storageObject.url);
                 $('#' + this.USERNAME_ID).val(this.storageObject.username);
@@ -71,10 +71,10 @@ var settings = {
         STORAGE_KEY : "ws",
 
         storageObject : {
-            url : '',
-            password : '',
-            apikey : '',
-            username : ''
+            url : null,
+            password : null,
+            apikey : null,
+            username : null
         },
 
         save : function(apiKey, url, username, password) {
@@ -95,13 +95,16 @@ var settings = {
 
             if (this.storageObject == null){
                this.clearValues();
-            } else if(this.storageObject != null && typeof this.storageObject.url != util.UNDEF && typeof this.storageObject.username != util.UNDEF
-                && typeof this.storageObject.password != util.UNDEF) {
+            } else if(this.storageObject != null && this.storageObject.url != null
+                && this.storageObject.username != null
+                && this.storageObject.apikey != null
+                && this.storageObject.password != null) {
 
                 $('#' + this.URL_ID).val(this.storageObject.url);
                 $('#' + this.USERNAME_ID).val(this.storageObject.username);
                 $('#' + this.PASSWORD_ID).val(this.storageObject.password);
 
+                restConn.setApiKey(this.storageObject.apikey);
             }
         },
 
@@ -186,7 +189,7 @@ $('#settings_navbtn_2').on('click', function() {
 });
 
 $('.tooltip_secure_protocol').on('click', function(){
-    $(this).hide();
+    $(this).css('visibility','hidden');
 });
 
 

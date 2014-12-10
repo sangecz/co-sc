@@ -52,13 +52,14 @@ var util = {
     },
 
     isOnline : function () {
-        //var networkState = navigator.connection.type;
+        var networkState = navigator.connection.type;
 
-        //if(networkState != Connection.UNKNOWN && networkState != Connection.NONE) {
-        //    return true;
-        //}
-        //return false;
-        return true
+        if(networkState != Connection.UNKNOWN && networkState != Connection.NONE) {
+            return true;
+        } else {
+            util.toast('Offline. Could not proceed.');
+            return false;
+        }
     }
 
 };

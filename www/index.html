@@ -14,7 +14,7 @@
         <script type="text/javascript" src="lib/jquery/jquery-2.1.1.js"></script>
         <script type="text/javascript" src="lib/jquery/jquery.mobile-1.4.5.js"></script>
         <script type="text/javascript" src="lib/jquery/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="lib/jquery/jquery.rest.min.js"></script>
+        <script type="text/javascript" src="lib/jquery/jquery.rest.js"></script>
 
         <title>CorrectiveScripts</title>
 
@@ -103,7 +103,7 @@
                     </div>
                     <div class="ui-block-b">
                         <button class="indexBtn" data-iconpos="top" data-icon="bars"
-                                onclick=" $.mobile.changePage($('#' + page.SCRIPTS), util.transOpt);">
+                                onclick=" script.openView(); ">
                             Scripts
                         </button>
                     </div>
@@ -139,6 +139,19 @@
                     </ul>
                 </div><!-- /content -->
 
+                <!-- POPUP -->
+                <div data-role="popup" id="dialog_script_result" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Script result</h1>
+                    </div>
+                    <div data-role="content" class="ui-corner-bottom ui-content">
+                        <b>Exit code: </b><span id="dialog_script_result_e"></span>
+                        <h4>Output: </h4>
+                        <p id="dialog_script_result_o"></p>
+                    </div>
+                    </div>
+                </div>
+
                 <div data-role="footer"  data-position="fixed">
 
                     <a href="" style="float: right; margin-right: 5px;"  data-icon="plus" data-role="button" data-iconpos="notext"
@@ -160,6 +173,9 @@
 
                     <div data-role="content">
                         <form method="post" id="script_edit_form" novalidate="novalidate">
+
+                            <span id="hidden_script_id" hidden="hidden">
+                            </span>
 
                             <div data-role="fieldcontain">
                                 <label for="script_edit_name">Name: </label>
@@ -203,7 +219,7 @@
                             <h4 class="ui-title">Are you sure you want to delete this script?</h4>
                             <p>This action cannot be undone.</p>
                             <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
-                            <a href="" data-role="button" data-inline="true" data-transition="flow" style="float: right;"
+                            <a href=""  data-role="button" data-inline="true" data-transition="flow" style="float: right;"
                                data-theme="c" onclick="script.del();">Delete</a>
                         </div>
                     </div>
@@ -262,8 +278,8 @@
                         <h4 class="ui-title">Are you sure you want to clear these settings from your device?</h4>
                         <p>This affects saved URLs and credentials for both Web Service and Monitoring. After that
                             you will have to fill them again.</p>
-                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
-                        <a href="" data-role="button" data-inline="true" data-transition="flow" style="float: right;"
+                        <a href="#"  data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                        <a href=""  data-role="button" data-inline="true" data-transition="flow" style="float: right;"
                            data-theme="c" onclick="settings.del();">Clear settings</a>
                     </div>
                 </div>
