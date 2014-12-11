@@ -9,14 +9,112 @@ RestConnector = function() {
         apiKey : null
     };
 
-    this.runScript = function(url, id) {
+    //var client = new $.RestClient(url, authOpts);
+
+    this.handleRequest = function (req, callback) {
+
+        req.done(function (data) {
+            if (data.ws.error == false) {
+                callback();
+            } else {
+                util.toast('Error: ' + data.ws.message);
+            }
+            $.mobile.loading('hide');
+            client = null;
+        });
+
+        req.fail(function(x, y, z){
+            restConn.failHandler(client, x, y, z);
+        });
+    };
+
+    this.deleteScript = function(url, scriptId) {
         $.mobile.loading('show');
 
         var client = new $.RestClient(url, authOpts);
         client.add('scripts');
 
         if(util.isOnline()) {
-            var req = client.scripts.read(id);
+            var req = client.scripts.del(scriptId);
+
+            // testing.
+            this.handleRequest(req, function() {
+                script.onDeleted(scriptId);
+            });
+
+            //req.done(function (data) {
+            //    if (data.ws.error == false) {
+            //        script.onDeleted(scriptId);
+            //    } else {
+            //        util.toast('Error: ' + data.ws.message);
+            //    }
+            //    $.mobile.loading('hide');
+            //    client = null;
+            //});
+            //
+            //req.fail(function(x, y, z){
+            //    restConn.failHandler(client, x, y, z);
+            //});
+        }
+    };
+
+    this.updateScript = function(url, updatedScript, scriptId) {
+        $.mobile.loading('show');
+
+        var client = new $.RestClient(url, authOpts);
+        client.add('scripts');
+
+        if(util.isOnline()) {
+            var req = client.scripts.update(scriptId, { script : JSON.stringify(updatedScript)});
+            req.done(function (data) {
+                if (data.ws.error == false) {
+                    script.onUpdated(updatedScript);
+                } else {
+                    util.toast('Error: ' + data.ws.message);
+                }
+                $.mobile.loading('hide');
+                client = null;
+            });
+
+            req.fail(function(x, y, z){
+                restConn.failHandler(client, x, y, z);
+            });
+        }
+    };
+
+    this.createScript = function(url, newScript) {
+        $.mobile.loading('show');
+
+        var client = new $.RestClient(url, authOpts);
+        client.add('scripts');
+
+        if(util.isOnline()) {
+            var req = client.scripts.create({ script : JSON.stringify(newScript)});
+
+            req.done(function (data) {
+                if (data.ws.error == false) {
+                    script.onCreated(newScript);
+                } else {
+                    util.toast('Error: ' + data.ws.message);
+                }
+                $.mobile.loading('hide');
+                client = null;
+            });
+
+            req.fail(function(x, y, z){
+                restConn.failHandler(client, x, y, z);
+            });
+        }
+    };
+
+    this.runScript = function(url, scriptId) {
+        $.mobile.loading('show');
+
+        var client = new $.RestClient(url, authOpts);
+        client.add('scripts');
+
+        if(util.isOnline()) {
+            var req = client.scripts.read(scriptId);
 
             req.done(function (data) {
                 if (data.ws.error == false) {
@@ -28,8 +126,8 @@ RestConnector = function() {
                 client = null;
             });
 
-            req.fail(function(x, y, y){
-                restConn.failHandler(client);
+            req.fail(function(x, y, z){
+                restConn.failHandler(client, x, y, z);
             });
         }
     };
@@ -53,8 +151,8 @@ RestConnector = function() {
                 client = null;
             });
 
-            req.fail(function(x, y, y){
-                restConn.failHandler(client);
+            req.fail(function(x, y, z){
+                restConn.failHandler(client, x, y, z);
             });
         }
     };
@@ -76,10 +174,7 @@ RestConnector = function() {
                 if (data.ws.error == false) {
                     // stays saved until first restart, must be loaded
                     authOpts.apiKey = data.data.apiKey;
-                    if (authOpts.apiKey != null && authOpts.apiKey != '') {
-                        //alert('Logged in!: ' + authOpts.apiKey);
-                        settings.ws.save(authOpts.apiKey, url, username, password);
-                    }
+                    settings.ws.onAuth(data.data.apiKey, url, username, password);
                 } else {
                     util.toast('Error: ' + data.ws.message);
                 }
@@ -88,8 +183,8 @@ RestConnector = function() {
 
             });
 
-            req.fail(function(x, y, y){
-                restConn.failHandler(client);
+            req.fail(function(x, y, z){
+                restConn.failHandler(client, x, y, z);
             });
         }
     };
@@ -110,12 +205,7 @@ RestConnector = function() {
 
             req.done(function (data) {
                 if (data.ws.error == false) {
-                    alert('Successfully registered.');
-                    $("#ws_hidden_name").hide();
-                    $("#submit_settings_ws").html('Login & Save');
-                    if ($('#ws_register').is(":checked")) {
-                        $('#ws_register').prop('checked', false).checkboxradio('refresh');
-                    }
+                    settings.ws.onRegistered();
                 } else {
                     util.toast('Error: ' + data.ws.message);
                 }
@@ -123,8 +213,8 @@ RestConnector = function() {
                 client = null;
             });
 
-            req.fail(function(x, y, y){
-                restConn.failHandler(client);
+            req.fail(function(x, y, z){
+                restConn.failHandler(client, x, y, z);
             });
         }
     };
@@ -133,8 +223,8 @@ RestConnector = function() {
        authOpts.apiKey = apikey;
     };
 
-    this.failHandler = function (client) {
-        util.toast('Error: Maybe wrong URL?');
+    this.failHandler = function (client, x, y, z) {
+        util.toastLong('Error: ' + JSON.parse(x.responseText).ws.message);
         $.mobile.loading('hide');
         client = null;
     };

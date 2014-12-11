@@ -34,6 +34,24 @@ var util = {
             });
     },
 
+    toastLong : function(msg){
+        $("<div class='ui-loader ui-overlay-shadow ui-body-e ui-corner-all'><b>"+msg+"</b></div>")
+            .css({ display: "block",
+                "background-color": 'white',
+                opacity: 1.0,
+                position: "fixed",
+                padding: "7px",
+                "text-align": "center",
+                width: "270px",
+                left: ($(window).width() - 284)/2,
+                "z-index": 10,
+                top: 3*$(window).height()/4 })
+            .appendTo( $.mobile.pageContainer ).delay( 5000 )
+            .fadeOut( 400, function(){
+                $(this).remove();
+            });
+    },
+
     checkConnection : function () {
         var networkState = navigator.connection.type;
 
@@ -52,9 +70,12 @@ var util = {
     },
 
     isOnline : function () {
+        if(!app.isRunningOnDevice())
+            return true;
+
         var networkState = navigator.connection.type;
 
-        if(networkState != Connection.UNKNOWN && networkState != Connection.NONE) {
+        if (networkState != Connection.UNKNOWN && networkState != Connection.NONE) {
             return true;
         } else {
             util.toast('Offline. Could not proceed.');
@@ -63,5 +84,22 @@ var util = {
     }
 
 };
+
+if (!Array.prototype.forEach)
+{
+    Array.prototype.forEach = function(fun /*, thisp*/)
+    {
+        var len = this.length;
+        if (typeof fun != "function")
+            throw new TypeError();
+
+        var thisp = arguments[1];
+        for (var i = 0; i < len; i++)
+        {
+            if (i in this)
+                fun.call(thisp, this[i], i, this);
+        }
+    };
+}
 
 

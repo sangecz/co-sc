@@ -12,7 +12,7 @@ var secStorage = {
         util.storage.removeItem(settings.ws.STORAGE_KEY);
         util.storage.removeItem(settings.overview.STORAGE_KEY);
 
-        if(this.instance != util.UNDEF){
+        if(secStorage.isInstanceSet()){
             this.instance.removePass();
         }
 
@@ -21,8 +21,8 @@ var secStorage = {
         util.toast('Passphrase has been deleted. Please, enter new one.');
     },
 
-    submitPass : function() {
-        this.instance = new SecStorage($('#enterpin_pin').val());
+    submitPass : function(pin) {
+        this.instance = new SecStorage(pin);
     },
 
     setForgetPassProp: function(){
@@ -31,6 +31,10 @@ var secStorage = {
         $( "#unlock_hedline" ).html('Enter new passphrase');
         $( "#unlock_hedline" ).css('width', '10em');
         $( "#submit_pin" ).html('Enter');
+    },
+
+    isInstanceSet : function() {
+        return (this.instance != util.UNDEF && this.instance != null);
     }
 };
 

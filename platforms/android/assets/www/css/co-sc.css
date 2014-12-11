@@ -1,10 +1,11 @@
 label.error {
     color: #FB3A3A;
     display: inline-block !important;
-    margin: 4px 0 0px 20px !important;
+    margin: 6px 20px 6px 20px !important;
     padding: 0 !important;
     text-align: left !important;
     width: 280px !important;
+    font-size: 12px !important;
     /*position: fixed;*/
 }
 
@@ -38,3 +39,34 @@ h4 {
 #dialog_script_result {
     max-height: 400px !important;
 }
+
+.selects {
+    margin-bottom: 8px !important;
+    /*display: inline !important;*/
+    /*position: relative !important;*/
+}
+
+/*#page_scripts_edit label {*/
+    /*margin-bottom: .4em !important;*/
+/*}*/
+
+#settings_ws_form {
+    line-height: 0.5em !important;
+    white-space: nowrap;
+}
+
+#settings_overview_form {
+    line-height: 0.5em !important;
+    white-space: nowrap;
+}
+
+#script_edit_form {
+    line-height: 0.5em !important;
+    white-space: nowrap;
+}
+
+#protocol_edit_form {
+    line-height: 0.5em !important;
+    white-space: nowrap;
+}
+

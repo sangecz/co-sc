@@ -339,7 +339,6 @@ Resource = (function() {
     }
 
     if (this.opts.apiKey) {
-      console.log('?' + this.opts.apiKey);
       headers.Authorization = this.opts.apiKey;
     }
     if (data && this.opts.stringifyData) {

@@ -5,18 +5,19 @@
 
 var script = {
 
-    listObject: {
-        itemID : null,
-        add: false
-    },
+    addToggle : false,
 
     scriptIdArray : [],
 
     openView : function(){
-        settings.ws.load();
-        $.mobile.changePage($('#' + page.SCRIPTS), util.transOpt);
-
-        script.updateList();
+        if (secStorage.isInstanceSet()) {
+            settings.ws.load();
+            $.mobile.changePage($('#' + page.SCRIPTS), util.transOpt);
+            script.updateList();
+        } else {
+            util.toast('You must enter passphrase first.');
+            app.onResumeApp();
+        }
     },
 
     updateList: function (){
@@ -26,24 +27,39 @@ var script = {
     },
 
     refreshItems: function(array){
+
+        // first empty listview and array
         this.scriptIdArray = [];
+        $('#scripts_list').empty();
+        if(array.length != 0) {
+            $('#scripts_list').append();
+        } else {
+            $('#scripts_list').append("<li>No scripts</li>");
+        }
 
         for(var i = 0; i < array.length; i++){
             var currentScript = array[i];
-            // extract ids
-            this.scriptIdArray[currentScript.id] = currentScript;
 
-            $('#scripts_list').append(
-                '<li class="item"><a class="edit_item" id="' +
-                currentScript.id
-                + '" onclick="script.edit(' +
-                currentScript.id
-                + ');">' +
-                currentScript.name
-                + '</a><a onclick="script.runScript(' +
-                currentScript.id
-                + ');"></a></li>'
-            );
+            // add new one
+            if(typeof this.scriptIdArray[currentScript.id] == util.UNDEF) {
+                // extract ids
+                this.scriptIdArray[currentScript.id] = currentScript;
+
+                $('#scripts_list').append(
+                    '<li class="item"><a class="edit_item" id="script-' +
+                    currentScript.id
+                    + '" onclick="script.edit(' +
+                    currentScript.id
+                    + ');">' +
+                    currentScript.name
+                    + '</a><a onclick="script.runScript(' +
+                    currentScript.id
+                    + ');"></a></li>'
+                );
+            } else {
+                // update name
+                $('#script-' + currentScript.id).html(currentScript.name);
+            }
         }
 
         this.refreshList();
@@ -57,38 +73,83 @@ var script = {
 
     edit: function(scriptId){
         if(event.handled !== true) {
-            // TODO WS
-            script.listObject.itemID = scriptId;
-            script.listObject.add = false;
+               $('#page_scripts_edit_header h1').html("Edit Script");
+            this.addToggle = false;
+
+            var curScript = script.scriptIdArray[scriptId];
+            $('#script_edit_name').val(curScript.name);
+            $('#script_edit_desc').val(curScript.description);
+            $('#script_edit_content').val(curScript.content);
+            $('#script_edit_ip').val(curScript.address);
+            $('#hidden_script_id').html(curScript.id);
+            // TODO az budou protokoly
+            $('#script_edit_protocol').selectmenu();
+            $('#script_edit_protocol').val(curScript.protocol_id).selectmenu('refresh');
+            $('#script_edit_role').selectmenu();
+            $('#script_edit_role').val(curScript.ps_role_id).selectmenu('refresh');
+            $('#script_edit_footer').show();
+
             $.mobile.changePage( "#" + page.SCRIPTS_EDIT, util.transOpt );
             event.handled = true;
         }
     },
 
     add: function() {
-        script.listObject.add = true;
+        $('#page_scripts_edit_header h1').html("Add Script");
+        this.addToggle = true;
+
+        $('#script_edit_name').val("");
+        $('#script_edit_desc').val("");
+        $('#script_edit_ip').val("");
+        $('#script_edit_content').val("");
+        $('#script_edit_footer').hide();
+
+        $('#script_edit_protocol').selectmenu();
+        $('#script_edit_protocol').val('default').selectmenu('refresh');
+
+        $('label.error').hide();
         $.mobile.changePage( "#" + page.SCRIPTS_EDIT, util.transOpt );
     },
 
     del: function() {
-        // TODO ws
+        var scriptId = $('#hidden_script_id').html();
+        if(settings.ws.storageObject != null){
+            restConn.deleteScript(settings.ws.storageObject.url, scriptId);
+        }
 
-
-        var name = $('#script_edit_name').val();
-        $('#scripts_list #' + name).parent().remove();
-        this.refreshList();
         $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
     },
 
     save: function() {
-        // TODO ws
-        var scriptName = $('#script_edit_name').val();
-        $('#scripts_list').prepend(
-            '<li class="item">' +
-            '<a class="edit_item" ' +
-            'id="' + scriptName + '" ' +
-            'onclick="script.edit(this);">' +
-            scriptName + '</a><a onclick="util.toast(\'run\');"></a></li>');
+        if(this.addToggle) {
+            // adding
+            var newScript = {};
+            newScript.name = $('#script_edit_name').val();
+            newScript.description = $('#script_edit_desc').val();
+            newScript.content = $('#script_edit_content').val();
+            newScript.address = $('#script_edit_ip').val();
+            newScript.protocol_id = $('#script_edit_protocol').val();
+            newScript.ps_role_id = $('#script_edit_role').val();
+
+            if(settings.ws.storageObject != null){
+                restConn.createScript(settings.ws.storageObject.url, newScript);
+            }
+        } else {
+            // editing
+            var scriptId = $('#hidden_script_id').html();
+            var curScript = script.scriptIdArray[scriptId];
+
+            curScript.name = $('#script_edit_name').val();
+            curScript.description = $('#script_edit_desc').val();
+            curScript.content = $('#script_edit_content').val();
+            curScript.address = $('#script_edit_ip').val();
+            curScript.protocol_id = $('#script_edit_protocol').val();
+            curScript.ps_role_id = $('#script_edit_role').val();
+
+            if(settings.ws.storageObject != null){
+                restConn.updateScript(settings.ws.storageObject.url, curScript, scriptId);
+            }
+        }
         $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
     },
 
@@ -106,36 +167,41 @@ var script = {
         $( "#dialog_script_result_e").html(data.data.exitCode);
         $( "#dialog_script_result" ).css('overflow-y', 'scroll');
         $( "#dialog_script_result" ).popup( "open" );
+    },
+
+    onCreated : function(newScript) {
+        this.scriptIdArray[newScript.id] = newScript;
+
+        util.toast('Script created');
+
+        $('#scripts_list').prepend(
+            '<li class="item"><a class="edit_item" id="script-' +
+            newScript.id
+            + '" onclick="script.edit(' +
+            newScript.id
+            + ');">' +
+            newScript.name
+            + '</a><a onclick="script.runScript(' +
+            newScript.id
+            + ');"></a></li>'
+        );
+        this.refreshList();
+    },
+
+    onUpdated : function(updatedScript) {
+        util.toast('Script updated');
+
+        this.scriptIdArray[updatedScript.id] = updatedScript;
+        $('#script-' + updatedScript.id).html($('#script_edit_name').val());
+    },
+
+    onDeleted : function (scriptId) {
+        util.toast('Script deleted');
+        $('#scripts_list #' + scriptId).parent().remove();
+        this.updateList();
     }
 
 };
-
-$(document).on('pagebeforeshow', '#' + page.SCRIPTS, function(){
-    script.refreshList();
-});
-
-$(document).on('pagebeforeshow', '#' + page.SCRIPTS_EDIT, function(){
-
-    if(script.listObject.add) {
-        $('#page_scripts_edit_header h1').html("Add script");
-        $('#script_edit_name').val("");
-        $('#script_edit_desc').val("");
-        $('#script_edit_ip').val("");
-        $('#script_edit_footer').hide();
-    } else {
-        $('#page_scripts_edit_header h1').html("Edit Script");
-
-        var curScript = script.scriptIdArray[script.listObject.itemID];
-        $('#script_edit_name').val(curScript.name);
-        $('#script_edit_desc').val(curScript.description);
-        $('#script_edit_content').val(curScript.content);
-        $('#script_edit_ip').val(curScript.address);
-        // TODO az budou protokoly
-        $('#script_edit_protocol').val(script.protocol_id);
-        $('#script_edit_footer').show();
-        script.listObject.itemID = null;
-    }
-});
 
 (function($,W,D) {
     var JQUERY4U = {};
@@ -144,19 +210,37 @@ $(document).on('pagebeforeshow', '#' + page.SCRIPTS_EDIT, function(){
     {
         setupFormValidation: function()
         {
+            $.validator.addMethod("valueNotEquals", function(value, element, arg){
+                return arg != value;
+            }, "default");
+
+            $.validator.addMethod("hashbang", function(value, element, arg){
+                return /^#!\/[a-zA-Z]+/.test(value);
+            }, "");
+
+            $.validator.messages.required = '';
 
             $('#script_edit_form').validate({
                 rules: {
-                    script_edit_name: {
-                        required: true
-                    },
+                    script_edit_name: "required",
                     script_edit_ip: "required",
-                    script_edit_content: "required"
+                    script_edit_content: {
+                        required: true,
+                        hashbang: ""
+
+                    },
+                    script_edit_protocol: {
+                        valueNotEquals: "default"
+                    }
                 },
                 messages: {
                     script_edit_name: "Please enter name.",
                     script_edit_ip: "Please enter IP address.",
-                    script_edit_content: "Please enter content."
+                    script_edit_content: {
+                        required: "Please enter content.",
+                        hashbang: "Script must start with hashbang"
+                    },
+                    script_edit_protocol: { valueNotEquals: "Please select a protocol!" }
                 },
                 submitHandler: function(form) {
                     var scriptName = $("#script_edit_name").val();

@@ -57,7 +57,7 @@
 
                         <div class="ui-grid-solo ui-responsive">
                               <div class="ui-block-a">
-                                <a href="" data-role="button" data-icon="check" data-iconpos="right"
+                                <a href="" data-role="button" data-icon="check" data-iconpos="right" data-mini="true"
                                    id="submit_pin">Unlock</a>
                             </div>
                         </div>
@@ -137,23 +137,21 @@
                 <div data-role="content">
                     <ul data-role="listview" data-theme="g" id="scripts_list">
                     </ul>
+
+                    <!-- POPUP -->
+                    <div data-role="popup" id="dialog_script_result" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                        <div data-role="header" data-theme="a" class="ui-corner-top">
+                            <h1>Script result</h1>
+                        </div>
+                        <div data-role="content" class="ui-corner-bottom ui-content">
+                            <b>Exit code: </b><span id="dialog_script_result_e"></span>
+                            <h4>Output: </h4>
+                            <p id="dialog_script_result_o"></p>
+                        </div>
+                    </div>
                 </div><!-- /content -->
 
-                <!-- POPUP -->
-                <div data-role="popup" id="dialog_script_result" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
-                    <div data-role="header" data-theme="a" class="ui-corner-top">
-                        <h1>Script result</h1>
-                    </div>
-                    <div data-role="content" class="ui-corner-bottom ui-content">
-                        <b>Exit code: </b><span id="dialog_script_result_e"></span>
-                        <h4>Output: </h4>
-                        <p id="dialog_script_result_o"></p>
-                    </div>
-                    </div>
-                </div>
-
                 <div data-role="footer"  data-position="fixed">
-
                     <a href="" style="float: right; margin-right: 5px;"  data-icon="plus" data-role="button" data-iconpos="notext"
                        onclick=" script.add();"></a>
 
@@ -188,23 +186,36 @@
                                 <label hidden="hidden" id="script_edit_desc-error" class="error" for="script_edit_desc"></label>
                             </div>
                             <div data-role="fieldcontain">
-                                <label for="script_edit_ip">IP address: </label>
+                                <label for="script_edit_ip">IP Address: </label>
                                 <input type="text" name="script_edit_ip" value="" id="script_edit_ip"  />
                                 <label hidden="hidden" id="script_edit_ip-error" class="error" for="script_edit_ip"></label>
                             </div>
                             <div data-role="fieldcontain">
-                                <label for="script_edit_protocol">Protocol: </label>
-                                <select name="script_edit_protocol" id="script_edit_protocol" data-inline="true">
-                                    <option>dummy</option>
-                                    <option>dummy</option>
-                                    <option>dummy</option>
-                                </select>
-                            </div>
-                            <div data-role="fieldcontain">
-                                <label for="script_edit_content">Script content: </label>
+                                <label for="script_edit_content">Content: </label>
                                 <textarea name="script_edit_content" id="script_edit_content" >#!/bin/bash</textarea>
                                 <label hidden="hidden" id="script_edit_content-error" class="error" for="script_edit_content"></label>
                             </div>
+
+                            <div data-role="fieldcontain" class="selects">
+                                <label for="script_edit_protocol">Protocol: </label>
+                                <select name="script_edit_protocol" id="script_edit_protocol" data-inline="false"
+                                        data-mini="true">
+                                    <option value="default" selected="selected">Select protocol...</option>
+                                    <option value="5">pet</option>
+                                    <option value="32">tricet dva</option>
+                                    <option value="48">ctyricet osm</option>
+                                </select>
+                                <label hidden="hidden" id="script_edit_protocol-error" class="error" for="script_edit_protocol"></label>
+                            </div>
+                            <div data-role="fieldcontain" class="selects">
+                                <label for="script_edit_role">Role: </label>
+                                <select name="script_edit_role" id="script_edit_role" data-inline="true"
+                                        data-mini="true">
+                                    <option value="2">Private</option>
+                                    <option value="1">Public</option>
+                                </select>
+                            </div>
+
                             <!--<input type="submit" />-->
 
                         </form>
@@ -235,22 +246,121 @@
 
                 </div>
 
+
+
+
+
+
             <!-- PROTOCOLS -->
             <div data-role="page" id="page_protocols" data-position="fixed">
 
                 <div data-role="header" data-position="fixed" id="page_protocols_header" >
                     <a href=""  data-icon="back" data-role="button" data-iconpos="notext"
-                       onclick="  $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
+                       onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
                     <h1>Protocols</h1>
+                    <a href="" data-icon="refresh" data-role="button" data-iconpos="notext"
+                       onclick=" protocol.updateList(); "></a>
+
                 </div><!-- /header -->
 
                 <div data-role="content">
-                    <h3>page Content</h3>
-                 </div><!-- /content -->
+                    <ul data-role="listview" data-theme="g" id="protocols_list">
+                    </ul>
+                </div><!-- /content -->
 
                 <div data-role="footer"  data-position="fixed">
-                    <h3>Footer Text</h3>
+                    <a href="" style="float: right; margin-right: 5px;"  data-icon="plus" data-role="button" data-iconpos="notext"
+                       onclick=" protocol.add();"></a>
+
                 </div>
+            </div>
+            <!-- SCRIPTS EDIT -->
+            <div data-role="page" id="page_protocols_edit" data-position="fixed">
+
+                <div data-role="header" data-position="fixed" id="page_protocols_edit_header" >
+                    <a href="" data-icon="back" data-role="button" data-iconpos="notext"
+                       onclick=" $.mobile.changePage($('#' + page.PROTOCOLS), util.backTransOpt);"></a>
+                    <h1>dummy</h1>
+                    <a href=""  data-icon="check" data-role="button" data-iconpos="notext"
+                       onclick=" $('#protocol_edit_form').submit(); "></a>
+
+                </div><!-- /header -->
+
+                <div data-role="content">
+                    <form method="post" id="protocol_edit_form" novalidate="novalidate">
+
+                            <span id="hidden_protocol_id" hidden="hidden">
+                            </span>
+
+                        <div data-role="fieldcontain">
+                            <label for="protocol_edit_name">Name: </label>
+                            <input type="text" name="protocol_edit_name" id="protocol_edit_name" />
+                            <label id="protocol_edit_name_error" class="error" for="protocol_edit_name"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="protocol_edit_desc">Description: </label>
+                            <input type="text" name="protocol_edit_desc" value="" id="protocol_edit_desc"  />
+                            <label hidden="hidden" id="protocol_edit_desc-error" class="error" for="protocol_edit_desc"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="protocol_edit_ip">IP Address: </label>
+                            <input type="text" name="protocol_edit_ip" value="" id="protocol_edit_ip"  />
+                            <label hidden="hidden" id="protocol_edit_ip-error" class="error" for="protocol_edit_ip"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="protocol_edit_content">Content: </label>
+                            <textarea name="protocol_edit_content" id="protocol_edit_content" >#!/bin/bash</textarea>
+                            <label hidden="hidden" id="protocol_edit_content-error" class="error" for="protocol_edit_content"></label>
+                        </div>
+
+                        <div data-role="fieldcontain" class="selects">
+                            <label for="protocol_edit_protocol">Protocol: </label>
+                            <select name="protocol_edit_protocol" id="protocol_edit_protocol" data-inline="false"
+                                    data-mini="true">
+                                <option value="default" selected="selected">Select protocol...</option>
+                                <option value="5">pet</option>
+                                <option value="32">tricet dva</option>
+                                <option value="48">ctyricet osm</option>
+                            </select>
+                            <label hidden="hidden" id="protocol_edit_protocol-error" class="error" for="protocol_edit_protocol"></label>
+                        </div>
+                        <div data-role="fieldcontain" class="selects">
+                            <label for="protocol_edit_role">Role: </label>
+                            <select name="protocol_edit_role" id="protocol_edit_role" data-inline="true"
+                                    data-mini="true">
+                                <option value="2">Private</option>
+                                <option value="1">Public</option>
+                            </select>
+                        </div>
+
+                        <!--<input type="submit" />-->
+
+                    </form>
+                </div><!-- /content -->
+
+                <!-- POPUP -->
+                <div data-role="popup" id="dialog_delete_protocol" data-overlay-theme="b" data-theme="a" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Delete protocol?</h1>
+                    </div>
+                    <div data-role="content" class="ui-corner-bottom ui-content">
+                        <h4 class="ui-title">Are you sure you want to delete this protocol?</h4>
+                        <p>This action cannot be undone.</p>
+                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                        <a href=""  data-role="button" data-inline="true" data-transition="flow" style="float: right;"
+                           data-theme="c" onclick="protocol.del();">Delete</a>
+                    </div>
+                </div>
+
+                <div data-role="footer"  data-position="fixed" id="protocol_edit_footer">
+                    <!--<a href=""  data-icon="edit" data-role="button" data-iconpos="notext"-->
+                    <!--onclick=""></a>-->
+                    <a href="#dialog_delete_protocol" id="protocol_delete" style="margin-left: 5px;" data-icon="delete"
+                       data-role="button" data-iconpos="notext" data-rel="popup" data-position-to="window"
+                       data-inline="true" data-transition="pop" ></a>
+
+                </div>
+
             </div>
 
 
@@ -289,9 +399,7 @@
                         <div class="ui-grid-solo ui-responsive">
                             <h4>Web Service connection</h4>
 
-                            <span class="tooltip_secure_protocol">It's recommended to use secure protocol (eg. https).</span>
-
-                            <div data-role="fieldcontain" id="ws_hidden_url">
+                            <div data-role="fieldcontain" id="ws_hidden_url" >
                                 <label for="ws_url">URL: </label>
                                 <input type="text" name="ws_url" value="https://127.0.0.1/co-sc/v1/" id="ws_url" placeholder="Web service URL: http://" />
                                 <label hidden="hidden" id="ws_url-error" class="error" for="ws_url"></label>
@@ -303,7 +411,7 @@
                                 <input type="checkbox" name="ws_register" id="ws_register" data-mini="true" />
                                 <label for="ws_register">Create new account.</label>
                                 </fieldset>
-                                <label hidden="hidden" id="ws_re-error" class="error" for="ws_register"></label>
+                                <label hidden="hidden" class="error" for="ws_register"></label>
                             </div>
 
                             <div data-role="fieldcontain" id="ws_hidden_name" style="display: none">
@@ -324,7 +432,7 @@
                             </div>
 
                             <div class="ui-block-a" id="ws_hidden_submit">
-                                <a href="" data-role="button"  data-icon="check"
+                                <a href="" data-role="button"  data-icon="check" data-mini="true"
                                        data-iconpos="right" id="submit_settings_ws">Login & Save</a>
                             </div>
                         </div>
@@ -336,8 +444,6 @@
                     <form method="post" id="settings_overview_form" novalidate="novalidate">
                         <div class="ui-grid-solo ui-responsive">
                             <h4>Monitoring tool connection</h4>
-
-                            <span class="tooltip_secure_protocol">It's recommended to use secure protocol (eg. https).</span>
 
                             <div data-role="fieldcontain" id="overview_hidden_url">
                                 <label for="overview_url">URL: </label>
@@ -356,7 +462,8 @@
                             </div>
 
                             <div data-role="fieldcontain" id="overview_hidden_submit">
-                                <a href="" data-role="button" data-icon="check" data-iconpos="right" id="submit_settings_overview">Save</a>
+                                <a href="" data-mini="true" data-role="button" data-icon="check"
+                                   data-iconpos="right" id="submit_settings_overview">Save</a>
                             </div>
                         </div>
                     </form>

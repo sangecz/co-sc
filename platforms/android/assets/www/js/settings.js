@@ -35,11 +35,10 @@ var settings = {
         },
 
         load : function () {
-
             this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
-            if (this.storageObject == null){
+            if (this.storageObject == null) {
                 this.clearValues();
-            } else if(this.storageObject != null && this.storageObject.url != null
+            } else if (this.storageObject != null && this.storageObject.url != null
                 && this.storageObject.username != null && this.storageObject.password != null) {
 
                 $('#' + this.URL_ID).val(this.storageObject.url);
@@ -84,8 +83,13 @@ var settings = {
             this.storageObject.password = password;
             this.storageObject.apikey = apiKey;
 
-            if(secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY)) {
-                util.toast('Saved');
+            if (secStorage.isInstanceSet()) {
+                if (secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY)) {
+                    util.toast('Saved & Logged in');
+                }
+            } else {
+                util.toast('You must enter passphrase first.');
+                app.onResumeApp();
             }
 
         },
@@ -133,6 +137,22 @@ var settings = {
             $('#' + this.USERNAME_ID).val('');
             $('#' + this.NAME_ID).val('');
             $('#' + this.PASSWORD_ID).val('');
+        },
+
+        onRegistered : function () {
+            util.toast('Successfully registered.');
+            $("#ws_hidden_name").hide();
+            $("#submit_settings_ws").html('Login & Save');
+            if ($('#ws_register').is(":checked")) {
+                $('#ws_register').prop('checked', false).checkboxradio('refresh');
+            }
+        },
+
+        onAuth : function (apiKey, url, username, password) {
+            // stays saved until first restart, must be loaded
+            if (apiKey != null && apiKey != '') {
+                settings.ws.save(apiKey, url, username, password);
+            }
         }
 
     },
@@ -150,14 +170,19 @@ var settings = {
 
     load : function() {
 
-        $("#settings_content_1").show();
-        $("#settings_content_2").hide();
-        $('#settings_navbtn_1').addClass('ui-btn-active');
-        $('#settings_navbtn_2').removeClass('ui-btn-active');
+        if (secStorage.isInstanceSet()) {
+            $("#settings_content_1").show();
+            $("#settings_content_2").hide();
+            $('#settings_navbtn_1').addClass('ui-btn-active');
+            $('#settings_navbtn_2').removeClass('ui-btn-active');
 
-        $.mobile.changePage($('#' + page.SETTINGS), util.transOpt);
-        this.overview.load();
-        this.ws.load();
+            $.mobile.changePage($('#' + page.SETTINGS), util.transOpt);
+            this.overview.load();
+            this.ws.load();
+        } else {
+            util.toast('You must enter passphrase first.');
+            app.onResumeApp();
+        }
     }
 
 };
@@ -188,11 +213,11 @@ $('#settings_navbtn_2').on('click', function() {
     $('#settings_navbtn_1').removeClass('ui-btn-active');
 });
 
-$('.tooltip_secure_protocol').on('click', function(){
-    $(this).css('visibility','hidden');
-});
-
-
+$('checkbox').buttonMarkup({mini: true});
+$('button').buttonMarkup({mini: true});
+$('#index button').buttonMarkup({mini: false});
+$('input').addClass('ui-mini');
+$('textarea').addClass('ui-mini');
 
 /** based on: http://www.sitepoint.com/basic-jquery-form-validation-tutorial/ */
 (function($,W,D) {
@@ -220,7 +245,12 @@ $('.tooltip_secure_protocol').on('click', function(){
                     overview_password: "Please enter your password."
                 },
                 submitHandler: function(form) {
-                    settings.overview.save();
+                    if (secStorage.isInstanceSet()){
+                        settings.overview.save();
+                    } else {
+                        util.toast('You must enter passphrase first.');
+                        app.onResumeApp();
+                    }
                 }
             });
             $("#submit_settings_overview").click(function(){
@@ -235,6 +265,7 @@ $('.tooltip_secure_protocol').on('click', function(){
                         url: true
                     },
                     ws_username: "required",
+                    ws_name: "required",
                     ws_password: "required"
                 },
                 messages: {
@@ -243,6 +274,7 @@ $('.tooltip_secure_protocol').on('click', function(){
                         url: "Not a valid URL."
                     },
                     ws_username: "Please enter your email.",
+                    ws_name: "Please enter your name.",
                     ws_password: "Please enter your password."
                 },
                 submitHandler: function(form) {
@@ -251,28 +283,6 @@ $('.tooltip_secure_protocol').on('click', function(){
             });
             $("#submit_settings_ws").click(function() {
                 $("#settings_ws_form").submit();
-                return false;
-            });
-///////////////////////////////////////////////////
-            $('#enterpin_form').validate({
-                rules: {
-                    enterpin_pin: {
-                        required: true,
-                        minlength: 6
-                    }
-                },
-                messages: {
-                    enterpin_pin: {
-                        required: "Please enter your passphrase.",
-                        minlength: $.validator.format("At least {0} characters required!")
-                    }
-                },
-                submitHandler: function(form) {
-                    secStorage.submitPass();
-                }
-            });
-            $("#submit_pin").click(function(){
-                $("#enterpin_form").submit();
                 return false;
             });
         }
