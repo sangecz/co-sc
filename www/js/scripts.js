@@ -81,9 +81,9 @@ var script = {
             $('#script_edit_content').val(curScript.content);
             $('#script_edit_ip').val(curScript.address);
             $('#hidden_script_id').html(curScript.id);
-            // TODO az budou protokoly
-            $('#script_edit_protocol').selectmenu();
-            $('#script_edit_protocol').val(curScript.protocol_id).selectmenu('refresh');
+
+            script.prepareProtocolSelect();
+
             $('#script_edit_role').selectmenu();
             $('#script_edit_role').val(curScript.ps_role_id).selectmenu('refresh');
             $('#script_edit_footer').show();
@@ -100,14 +100,52 @@ var script = {
         $('#script_edit_name').val("");
         $('#script_edit_desc').val("");
         $('#script_edit_ip').val("");
-        $('#script_edit_content').val("");
+        $('#script_edit_content').val("#!/bin/bash");
+        $('#script_edit_role').selectmenu();
+        $('#script_edit_role').val(2).selectmenu('refresh');
+
         $('#script_edit_footer').hide();
 
-        $('#script_edit_protocol').selectmenu();
-        $('#script_edit_protocol').val('default').selectmenu('refresh');
+        script.prepareProtocolSelect();
 
         $('label.error').hide();
         $.mobile.changePage( "#" + page.SCRIPTS_EDIT, util.transOpt );
+    },
+
+    prepareProtocolSelect : function () {
+        var protocolSelect = $('#script_edit_protocol');
+        if(protocol.protocolIdArray.length <= 0) {
+            protocol.updateList();
+        } else {
+            protocolSelect.empty();
+            protocolSelect.append('<option value="default" selected="selected">Select protocol...</option>');
+            protocolSelect.append('<option value="create_new">Create new protocol...</option>');
+
+            protocol.protocolIdArray.forEach(function printBr(protocol, protocolId, array) {
+                var id = "protocol-id-" + protocolId;
+                var opt = '<option value="' + id + '">' + protocol.name + '</option>';
+                protocolSelect.append(opt);
+            });
+
+            var curScriptId = $('#hidden_script_id').html();
+            var protocolId = script.scriptIdArray[curScriptId].protocol_id;
+
+            // check if protocol id is not set (=protocol was deleted) OR ADD
+            if(this.addToggle || protocolId == null) {
+                protocolSelect.val('default').selectmenu('refresh');
+            } else {
+                protocolSelect.val("protocol-id-" + protocolId).selectmenu('refresh');
+            }
+        }
+    },
+
+
+    protocolSelected : function () {
+        if($('#script_edit_protocol' + ' option:selected').val() == "create_new") {
+            protocol.fromScripts = true;
+            protocol.createNewSelected = true;
+            protocol.add();
+        }
     },
 
     del: function() {
@@ -118,30 +156,21 @@ var script = {
     },
 
     save: function() {
+        var script = {};
+        script.name = $('#script_edit_name').val();
+        script.description = $('#script_edit_desc').val();
+        script.content = $('#script_edit_content').val();
+        script.address = $('#script_edit_ip').val();
+        script.protocol_id = $('#script_edit_protocol').val().replace("protocol-id-", "");
+        script.ps_role_id = $('#script_edit_role').val();
+
         if(this.addToggle) {
             // adding
-            var newScript = {};
-            newScript.name = $('#script_edit_name').val();
-            newScript.description = $('#script_edit_desc').val();
-            newScript.content = $('#script_edit_content').val();
-            newScript.address = $('#script_edit_ip').val();
-            newScript.protocol_id = $('#script_edit_protocol').val();
-            newScript.ps_role_id = $('#script_edit_role').val();
-
-            restConn.createScript(newScript);
+            restConn.createScript(script);
         } else {
             // editing
             var scriptId = $('#hidden_script_id').html();
-            var curScript = script.scriptIdArray[scriptId];
-
-            curScript.name = $('#script_edit_name').val();
-            curScript.description = $('#script_edit_desc').val();
-            curScript.content = $('#script_edit_content').val();
-            curScript.address = $('#script_edit_ip').val();
-            curScript.protocol_id = $('#script_edit_protocol').val();
-            curScript.ps_role_id = $('#script_edit_role').val();
-
-            restConn.updateScript(curScript, scriptId);
+            restConn.updateScript(script, scriptId);
         }
         $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
     },
@@ -205,8 +234,8 @@ var script = {
         setupFormValidation: function()
         {
             $.validator.addMethod("valueNotEquals", function(value, element, arg){
-                return arg != value;
-            }, "default");
+                return (value != "default" && value != "create_new");
+            }, "");
 
             $.validator.addMethod("hashbang", function(value, element, arg){
                 return /^#!\/[a-zA-Z]+/.test(value);
@@ -224,7 +253,7 @@ var script = {
 
                     },
                     script_edit_protocol: {
-                        valueNotEquals: "default"
+                        valueNotEquals: ""
                     }
                 },
                 messages: {

@@ -11,21 +11,33 @@ var restConn =  {
     },
 
     init : function(url) {
-        this.client = new $.RestClient(url, this.authOpts);
-        this.client.add('register');
-        this.client.add('login');
-        this.client.add('scripts');
-        this.client.add('protocols');
+        restConn.client = new $.RestClient(url, restConn.authOpts);
+        restConn.client.add('register');
+        restConn.client.add('login');
+        restConn.client.add('scripts');
+        restConn.client.add('protocols');
     },
 
     deleteScript : function(scriptId) {
         $.mobile.loading('show');
 
         if(util.isOnline()) {
-            var req = this.client.scripts.del(scriptId);
+            var req = restConn.client.scripts.del(scriptId);
 
-            this.handleRequest(req, function() {
+            restConn.handleRequest(req, function() {
                 script.onDeleted(scriptId);
+            });
+        }
+    },
+
+    deleteProtocol : function(protocolId) {
+        $.mobile.loading('show');
+
+        if(util.isOnline()) {
+            var req = restConn.client.protocols.del(protocolId);
+
+            restConn.handleRequest(req, function() {
+                protocol.onDeleted(protocolId);
             });
         }
     },
@@ -34,12 +46,27 @@ var restConn =  {
         $.mobile.loading('show');
 
         if(util.isOnline()) {
-            var req = this.client.scripts.update(scriptId, {
+            var req = restConn.client.scripts.update(scriptId, {
                 script : JSON.stringify(updatedScript)
             });
 
-            this.handleRequest(req, function() {
+            restConn.handleRequest(req, function() {
                 script.onUpdated(updatedScript);
+            });
+        }
+    },
+
+    updateProtocol : function(updatedProtocol, protocolId) {
+        $.mobile.loading('show');
+        var prot = {
+            protocol : JSON.stringify(updatedProtocol)
+        };
+
+        if(util.isOnline()) {
+            var req = restConn.client.protocols.update(protocolId, prot);
+
+            restConn.handleRequest(req, function() {
+                protocol.onUpdated(updatedProtocol);
             });
         }
     },
@@ -48,12 +75,27 @@ var restConn =  {
         $.mobile.loading('show');
 
         if(util.isOnline()) {
-            var req = this.client.scripts.create({
+            var req = restConn.client.scripts.create({
                 script : JSON.stringify(newScript)
             });
 
-            this.handleRequest(req, function() {
+            restConn.handleRequest(req, function() {
                 script.onCreated(newScript);
+            });
+        }
+    },
+
+    createProtocol : function(newProtocol) {
+        $.mobile.loading('show');
+        var prot = {
+            protocol : JSON.stringify(newProtocol)
+        };
+
+        if(util.isOnline()) {
+            var req = restConn.client.protocols.create(prot);
+
+            restConn.handleRequest(req, function() {
+                protocol.onCreated(newProtocol);
             });
         }
     },
@@ -62,7 +104,7 @@ var restConn =  {
         $.mobile.loading('show');
 
         if(util.isOnline()) {
-            var req = this.client.scripts.read(scriptId);
+            var req = restConn.client.scripts.read(scriptId);
 
             req.done(function (data) {
                 if (data.ws.error == false) {
@@ -84,11 +126,33 @@ var restConn =  {
         $.mobile.loading('show');
 
         if(util.isOnline()) {
-            var req = this.client.scripts.read();
+            var req = restConn.client.scripts.read();
 
             req.done(function (data) {
                 if (data.ws.error == false) {
                     script.refreshItems(data.data.scripts);
+                } else {
+                    util.toast('Error: ' + data.ws.message);
+                }
+                $.mobile.loading('hide');
+            });
+
+            req.fail(function(x, y, z){
+                util.toastLong('Error: ' + JSON.parse(x.responseText).ws.message);
+                $.mobile.loading('hide');
+            });
+        }
+    },
+
+    readProtocols : function () {
+        $.mobile.loading('show');
+
+        if(util.isOnline()) {
+            var req = restConn.client.protocols.read();
+
+            req.done(function (data) {
+                if (data.ws.error == false) {
+                    protocol.refreshItems(data.data.protocols);
                 } else {
                     util.toast('Error: ' + data.ws.message);
                 }
@@ -107,7 +171,7 @@ var restConn =  {
         $.mobile.loading('show');
 
         if(util.isOnline()) {
-            var req = this.client.login.create({
+            var req = restConn.client.login.create({
                 email: username,
                 password: password
             });
@@ -135,28 +199,28 @@ var restConn =  {
         $.mobile.loading('show');
 
         if(util.isOnline()) {
-            var req = this.client.register.create({
+            var req = restConn.client.register.create({
                 email: username,
                 password: password,
                 name: name
             });
 
-            this.handleRequest(req, function() {
+            restConn.handleRequest(req, function() {
                 settings.ws.onRegistered();
             });
         }
     },
 
     setURL : function(urlIn) {
-        this.url = urlIn;
+        restConn.url = urlIn;
     },
 
     setApiKey : function (apikey) {
-       this.authOpts.apiKey = apikey;
+        restConn.authOpts.apiKey = apikey;
     },
 
     isAuthenticated : function () {
-        return (this.authOpts.apiKey != util.UNDEF)
+        return (restConn.authOpts.apiKey != util.UNDEF)
     },
 
     handleRequest : function (req, callback) {

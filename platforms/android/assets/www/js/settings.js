@@ -24,8 +24,12 @@ var settings = {
             this.storageObject.username = $('#' + this.USERNAME_ID).val();
             this.storageObject.password = $('#' + this.PASSWORD_ID).val();
 
-            if(secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY)) {
-                util.toast('Saved');
+            if (secStorage.isInstanceSet()){
+                if(secStorage.instance.saveToStorage(this.storageObject, this.STORAGE_KEY)) {
+                    util.toast('Saved');
+                }
+            } else {
+                app.onDeniedAccess();
             }
         },
 
@@ -35,20 +39,25 @@ var settings = {
         },
 
         load : function () {
-            this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
-            if (this.storageObject == null) {
-                this.clearValues();
-            } else if (this.storageObject != null && this.storageObject.url != null
-                && this.storageObject.username != null && this.storageObject.password != null) {
+            if (secStorage.isInstanceSet()) {
+                this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
+                if (this.storageObject == null) {
+                    this.clearValues();
+                } else if (this.storageObject != null && this.storageObject.url != null
+                    && this.storageObject.username != null && this.storageObject.password != null) {
 
-                $('#' + this.URL_ID).val(this.storageObject.url);
-                $('#' + this.USERNAME_ID).val(this.storageObject.username);
-                $('#' + this.PASSWORD_ID).val(this.storageObject.password);
+                    $('#' + this.URL_ID).val(this.storageObject.url);
+                    $('#' + this.USERNAME_ID).val(this.storageObject.username);
+                    $('#' + this.PASSWORD_ID).val(this.storageObject.password);
 
-                overview.url = this.storageObject.url;
-                overview.username = this.storageObject.username;
-                overview.password = this.storageObject.password;
+                    overview.url = this.storageObject.url;
+                    overview.username = this.storageObject.username;
+                    overview.password = this.storageObject.password;
+                }
+            } else {
+                app.onDeniedAccess();
             }
+
         },
 
         clearValues : function(){
@@ -88,27 +97,31 @@ var settings = {
                     util.toast('Saved & Logged in');
                 }
             } else {
-                util.toast('You must enter passphrase first.');
-                app.onResumeApp();
+                app.onDeniedAccess();
             }
 
         },
 
         load : function() {
-            this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
 
-            if (this.storageObject == null){
-               this.clearValues();
-            } else if(this.storageObject != null && this.storageObject.url != null
-                && this.storageObject.username != null
-                && this.storageObject.apikey != null
-                && this.storageObject.password != null) {
+            if (secStorage.isInstanceSet()) {
+                this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
 
-                $('#' + this.URL_ID).val(this.storageObject.url);
-                $('#' + this.USERNAME_ID).val(this.storageObject.username);
-                $('#' + this.PASSWORD_ID).val(this.storageObject.password);
+                if (this.storageObject == null){
+                   this.clearValues();
+                } else if(this.storageObject != null && this.storageObject.url != null
+                    && this.storageObject.username != null
+                    && this.storageObject.apikey != null
+                    && this.storageObject.password != null) {
 
-                restConn.setApiKey(this.storageObject.apikey);
+                    $('#' + this.URL_ID).val(this.storageObject.url);
+                    $('#' + this.USERNAME_ID).val(this.storageObject.username);
+                    $('#' + this.PASSWORD_ID).val(this.storageObject.password);
+
+                    restConn.setApiKey(this.storageObject.apikey);
+                }
+            } else {
+                app.onDeniedAccess();
             }
         },
 
@@ -182,8 +195,7 @@ var settings = {
             this.overview.load();
             this.ws.load();
         } else {
-            util.toast('You must enter passphrase first.');
-            app.onResumeApp();
+            app.onDeniedAccess();
         }
     }
 
@@ -247,12 +259,7 @@ $('textarea').addClass('ui-mini');
                     overview_password: "Please enter your password."
                 },
                 submitHandler: function(form) {
-                    if (secStorage.isInstanceSet()){
                         settings.overview.save();
-                    } else {
-                        util.toast('You must enter passphrase first.');
-                        app.onResumeApp();
-                    }
                 }
             });
             $("#submit_settings_overview").click(function(){

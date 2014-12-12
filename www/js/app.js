@@ -55,7 +55,7 @@ var app = {
 
         } else if($.mobile.activePage.attr('id') == page.PROTOCOLS_EDIT) {
 
-            $.mobile.changePage($('#' + page.PROTOCOLS), util.backTransOpt);
+            protocol.onBack();
 
         } else {
             history.back();

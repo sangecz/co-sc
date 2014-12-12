@@ -55,7 +55,7 @@ var app = {
 
         } else if($.mobile.activePage.attr('id') == page.PROTOCOLS_EDIT) {
 
-            $.mobile.changePage($('#' + page.PROTOCOLS), util.backTransOpt);
+            protocol.onBack();
 
         } else {
             history.back();
@@ -84,6 +84,11 @@ var app = {
             && document.URL.indexOf( 'https://' ) === -1
             && document.URL.indexOf( 'file://' ) === -1);
        return app;
+    },
+
+    onDeniedAccess : function () {
+        util.toast('You must enter passphrase first.');
+        app.onResumeApp();
     }
 };
 
@@ -113,20 +118,15 @@ app.initialize();
                 submitHandler: function(form) {
                     secStorage.submitPass($('#enterpin_pin').val());
 
-                    if (secStorage.isInstanceSet()) {
-                        settings.ws.load();
+                    settings.ws.load();
 
-                        if(settings.ws.storageObject) {
-                            if(settings.ws.storageObject.url) {
-                                restConn.init(settings.ws.storageObject.url);
-                                restConn.setApiKey(settings.ws.storageObject.apikey);
-                            } else {
-                                util.toast('Web Service URL not set. Go to settings.');
-                            }
+                    if(settings.ws.storageObject) {
+                        if(settings.ws.storageObject.url) {
+                            restConn.init(settings.ws.storageObject.url);
+                            restConn.setApiKey(settings.ws.storageObject.apikey);
+                        } else {
+                            util.toast('Web Service URL not set. Go to settings.');
                         }
-                    } else {
-                        util.toast('You must enter passphrase first.');
-                        app.onResumeApp();
                     }
                 }
             });

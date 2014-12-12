@@ -6,36 +6,55 @@
 var protocol = {
 
     addToggle : false,
-
+    fromScripts : false,
+    createNewSelected : false,
     protocolIdArray : [],
 
-    openView : function(){
-        if (secStorage.isInstanceSet()) {
+    onBack : function () {
 
-            if(restConn.isAuthenticated()) {
-                settings.ws.load();
-                $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);
-                protocol.updateList();
-            } else {
-                util.toast('You must log in first. Go to settings');
-            }
+        if(protocol.fromScripts) {
+            protocol.fromScripts = false;
+            history.back();
         } else {
-            util.toast('You must enter passphrase first.');
-            app.onResumeApp();
+            $.mobile.changePage($('#' + page.PROTOCOLS), util.backTransOpt);
+        }
+    },
+
+    openView : function(){
+        settings.ws.load();
+
+        if(restConn && restConn.isAuthenticated()) {
+            protocol.updateList();
+            $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);
+
+        } else {
+            util.toast('You must log in first. Go to settings');
         }
 
+        $('#protocol_back_button').on('click', function(){
+            protocol.onBack();
+        });
+
+        $('#protocol_update_button').on('click', function(){
+            protocol.updateList();
+        });
+
+        $('#protocol_delete_button').on('click', function(){
+            protocol.del();
+        });
+
+        $('#protocol_add_button').on('click', function(){
+            protocol.add();
+        });
     },
 
     updateList: function (){
-        if(settings.ws.storageObject != null){
-            restConn.readProtocols(settings.ws.storageObject.url);
-        }
+        restConn.readProtocols();
     },
 
     refreshItems: function(array){
-
-        // first, empty listview and array
-        this.protocolIdArray = [];
+        // first empty listview and array
+        protocol.protocolIdArray = [];
         $('#protocols_list').empty();
         if(array.length != 0) {
             $('#protocols_list').append();
@@ -45,16 +64,15 @@ var protocol = {
 
         for(var i = 0; i < array.length; i++){
             var currentProtocol = array[i];
-
             // add new one
-            if(typeof this.protocolIdArray[currentProtocol.id] == util.UNDEF) {
+            if(typeof protocol.protocolIdArray[currentProtocol.id] == util.UNDEF) {
                 // extract ids
-                this.protocolIdArray[currentProtocol.id] = currentProtocol;
+                protocol.protocolIdArray[currentProtocol.id] = currentProtocol;
 
                 $('#protocols_list').append(
-                    '<li class="item"><a class="edit_item" id="protocol-' +
+                    '<li class="p_item" id="protocol-' +
                     currentProtocol.id
-                    + '" onclick="protocol.edit(' +
+                    + '"><a class="edit_item onclick="protocol.edit(' +
                     currentProtocol.id
                     + ');">' +
                     currentProtocol.name
@@ -66,6 +84,24 @@ var protocol = {
             }
         }
 
+        // trigger only when scripts edit page presented
+        if($.mobile.activePage.attr('id') == page.SCRIPTS_EDIT && protocol.protocolIdArray.length > 0) {
+            script.prepareProtocolSelect();
+
+            if(protocol.createNewSelected) {
+                protocol.createNewSelected = false;
+                var protocolSelect = $('#script_edit_protocol');
+                var lastProtocol = array[array.length - 1];
+                protocolSelect.val("protocol-id-" + lastProtocol.id).selectmenu('refresh');
+                protocolSelect.selectmenu();
+            }
+         }
+
+        $('.p_item').click(function() {
+            alert('click');
+            protocol.edit($(this).attr("id").replace('protocol-', ''));
+        });
+
         this.refreshList();
     },
 
@@ -76,98 +112,101 @@ var protocol = {
     edit: function(protocolId){
         if(event.handled !== true) {
             $('#page_protocols_edit_header h1').html("Edit Protocol");
-            this.addToggle = false;
+            protocol.addToggle = false;
 
             var curProtocol = protocol.protocolIdArray[protocolId];
+            $('#hidden_protocol_id').html(curProtocol.id);
+
             $('#protocol_edit_name').val(curProtocol.name);
             $('#protocol_edit_desc').val(curProtocol.description);
-            $('#protocol_edit_content').val(curProtocol.content);
-            $('#protocol_edit_ip').val(curProtocol.address);
-            $('#hidden_protocol_id').html(curProtocol.id);
-            // TODO az budou protokoly
-            $('#protocol_edit_protocol').selectmenu();
-            $('#protocol_edit_protocol').val(curProtocol.protocol_id).selectmenu('refresh');
+            $('#protocol_edit_type').selectmenu();
+            $('#protocol_edit_type').val(curProtocol.type).selectmenu('refresh');
+            $('#protocol_edit_login').val(curProtocol.login);
+            $('#protocol_edit_password').val(curProtocol.passwd);
+            $('#protocol_edit_port').val(curProtocol.port);
             $('#protocol_edit_role').selectmenu();
             $('#protocol_edit_role').val(curProtocol.ps_role_id).selectmenu('refresh');
+
             $('#protocol_edit_footer').show();
 
-            $.mobile.changePage( "#" + page.SCRIPTS_EDIT, util.transOpt );
+            $.mobile.changePage( "#" + page.PROTOCOLS_EDIT, util.transOpt );
             event.handled = true;
         }
     },
 
-    add: function() {
+    add : function() {
         $('#page_protocols_edit_header h1').html("Add Protocol");
-        this.addToggle = true;
+        protocol.addToggle = true;
 
-        $('#protocol_edit_name').val("");
-        $('#protocol_edit_desc').val("");
-        $('#protocol_edit_ip').val("");
-        $('#protocol_edit_content').val("");
+        $('#protocol_edit_name').val('');
+        $('#protocol_edit_desc').val('');
+        $('#protocol_edit_type').selectmenu();
+        $('#protocol_edit_type').val('ssh').selectmenu('refresh');
+        $('#protocol_edit_login').val('');
+        $('#protocol_edit_password').val('');
+        $('#protocol_edit_port').val(22);
+        $('#protocol_edit_role').selectmenu();
+        $('#protocol_edit_role').val(2).selectmenu('refresh');
+
         $('#protocol_edit_footer').hide();
 
         $('label.error').hide();
-        $.mobile.changePage( "#" + page.SCRIPTS_EDIT, util.transOpt );
+        $.mobile.changePage( "#" + page.PROTOCOLS_EDIT, util.transOpt );
     },
 
     del: function() {
-        // TODO ws
         var protocolId = $('#hidden_protocol_id').html();
-        if(settings.ws.storageObject != null){
-            restConn.deleteProtocol(settings.ws.storageObject.url, protocolId);
-        }
+        restConn.deleteProtocol(protocolId);
 
-        $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
+        $.mobile.changePage( "#" + page.PROTOCOLS, util.backTransOpt );
     },
 
     save: function() {
-        if(this.addToggle) {
-            // adding
-            var newProtocol = {};
-            newProtocol.name = $('#protocol_edit_name').val();
-            newProtocol.description = $('#protocol_edit_desc').val();
-            newProtocol.content = $('#protocol_edit_content').val();
-            newProtocol.address = $('#protocol_edit_ip').val();
-            newProtocol.protocol_id = $('#protocol_edit_protocol').val();
-            newProtocol.ps_role_id = $('#protocol_edit_role').val();
+        var prot = {};
+        prot.name = $('#protocol_edit_name').val();
+        prot.description = $('#protocol_edit_desc').val();
+        prot.type = $('#protocol_edit_type').val();
+        prot.ps_role_id = $('#protocol_edit_role').val();
 
-            if(settings.ws.storageObject != null){
-                restConn.createProtocol(settings.ws.storageObject.url, newProtocol);
+        if(prot.type == "ssh") {
+            prot.sshAttr = {};
+            prot.sshAttr.port = $('#protocol_edit_port').val();
+            prot.sshAttr.auth = {};
+            prot.sshAttr.auth.login = $('#protocol_edit_login').val();
+            prot.sshAttr.auth.passwd = $('#protocol_edit_password').val();
+
+            if(protocol.addToggle) {
+                // adding
+                restConn.createProtocol(prot);
+            } else {
+                // editing
+                var protocolId = $('#hidden_protocol_id').html();
+                restConn.updateProtocol(prot, protocolId);
             }
         } else {
-            // editing
-            var protocolId = $('#hidden_protocol_id').html();
-            var curProtocol = protocol.protocolIdArray[protocolId];
-
-            curProtocol.name = $('#protocol_edit_name').val();
-            curProtocol.description = $('#protocol_edit_desc').val();
-            curProtocol.content = $('#protocol_edit_content').val();
-            curProtocol.address = $('#protocol_edit_ip').val();
-            curProtocol.protocol_id = $('#protocol_edit_protocol').val();
-            curProtocol.ps_role_id = $('#protocol_edit_role').val();
-
-            if(settings.ws.storageObject != null){
-                restConn.updateProtocol(settings.ws.storageObject.url, curProtocol, protocolId);
-            }
+            util.toast('Error: Unsupported protocol type.');
         }
-        $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
+
+        this.onBack();
     },
 
     onCreated : function(newProtocol) {
+
         this.protocolIdArray[newProtocol.id] = newProtocol;
 
         util.toast('Protocol created');
 
         $('#protocols_list').prepend(
-            '<li class="item"><a class="edit_item" id="protocol-' +
+            '<li class="p_item" id="protocol-' +
             newProtocol.id
-            + '" onclick="protocol.edit(' +
+            + '"><a class="edit_item" onclick="protocol.edit(' +
             newProtocol.id
             + ');">' +
             newProtocol.name
             + '</a></li>'
         );
-        this.refreshList();
+        this.updateList();
+
     },
 
     onUpdated : function(updatedProtocol) {
@@ -175,6 +214,8 @@ var protocol = {
 
         this.protocolIdArray[updatedProtocol.id] = updatedProtocol;
         $('#protocol-' + updatedProtocol.id).html($('#protocol_edit_name').val());
+
+        this.updateList();
     },
 
     onDeleted : function (protocolId) {
@@ -182,59 +223,36 @@ var protocol = {
         $('#protocols_list #' + protocolId).parent().remove();
         this.updateList();
     }
-
 };
 
 (function($,W,D) {
     var JQUERY4U = {};
 
-    JQUERY4U.UTIL =
-    {
-        setupFormValidation: function()
-        {
-            //$.validator.addMethod("valueNotEquals", function(value, element, arg){
-            //    return arg != value;
-            //}, "default");
-            //
-            //$.validator.addMethod("hashbang", function(value, element, arg){
-            //    return /^#!\/[a-zA-Z]+/.test(value);
-            //}, "");
+    JQUERY4U.UTIL =    {
+        setupFormValidation: function()     {
 
             $.validator.messages.required = '';
 
             $('#protocol_edit_form').validate({
                 rules: {
                     protocol_edit_name: "required",
-                    protocol_edit_ip: "required",
-                    protocol_edit_content: {
-                        required: true,
-                        hashbang: ""
-
-                    },
-                    protocol_edit_protocol: {
-                        valueNotEquals: "default"
+                    protocol_edit_login: "required",
+                    protocol_edit_password: "required",
+                    protocol_edit_port: {
+                        digits: true
                     }
                 },
                 messages: {
                     protocol_edit_name: "Please enter name.",
-                    protocol_edit_ip: "Please enter IP address.",
-                    protocol_edit_content: {
-                        required: "Please enter content.",
-                        hashbang: "Protocol must start with hashbang"
-                    },
-                    protocol_edit_protocol: { valueNotEquals: "Please select a protocol!" }
+                    protocol_edit_login: "Please enter SSH login.",
+                    protocol_edit_password: "Please enter SSH password.",
+                    protocol_edit_port: "Please enter a port number",
+                    protocol_edit_port: {
+
+                    }
                 },
                 submitHandler: function(form) {
-                    var protocolName = $("#protocol_edit_name").val();
-                    if( $('#' + protocolName).length == 0) {
-                        $('#protocol_edit_name_error').hide();
-                        $('#protocol_edit_name_error').html("");
-                        protocol.save();
-                    } else {
-                        $('#protocol_edit_name_error').html("Name already exists.");
-                        $('#protocol_edit_name_error').show();
-                    }
-
+                    protocol.save();
                 }
             });
         }

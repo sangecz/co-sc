@@ -6,23 +6,17 @@ var overview = {
 
     openOverview : function () {
 
-        if (secStorage.isInstanceSet()) {
-            settings.overview.load();
+        settings.overview.load();
 
-            if (util.isOnline()) {
-                if (this.url != null && this.username != null && this.password != null) {
-                    var url = this.getHttpBasicAuthUrl();
-                    window.open(url, '_blank', 'location=no');
-                } else {
-                    util.toast('Monitoring properties not set. Go to Settings first.');
-                }
+        if (util.isOnline()) {
+            if (this.url != null && this.username != null && this.password != null) {
+                var url = this.getHttpBasicAuthUrl();
+                window.open(url, '_blank', 'location=no');
             } else {
-                util.toast('Offline. Could not proceed.');
+                util.toast('Monitoring properties not set. Go to Settings first.');
             }
-
         } else {
-            util.toast('You must enter passphrase first.');
-            app.onResumeApp();
+            util.toast('Offline. Could not proceed.');
         }
     },
 

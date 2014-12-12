@@ -87,7 +87,7 @@ var util = {
 
 if (!Array.prototype.forEach)
 {
-    Array.prototype.forEach = function(fun /*, thisp*/)
+    Array.prototype.forEach = function(fun)
     {
         var len = this.length;
         if (typeof fun != "function")

@@ -16,6 +16,8 @@
         <script type="text/javascript" src="lib/jquery/jquery.validate.min.js"></script>
         <script type="text/javascript" src="lib/jquery/jquery.rest.js"></script>
 
+        <script type="text/javascript" src="js/protocols.js"></script>
+
         <title>CorrectiveScripts</title>
 
     </head>
@@ -109,7 +111,7 @@
                     </div>
                     <div class="ui-block-a">
                         <button class="indexBtn" data-iconpos="top" data-icon="action"
-                                onclick=" $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);">
+                                onclick=" protocol.openView();">
                             Protocols
                         </button>
                     </div>
@@ -163,7 +165,7 @@
                     <div data-role="header" data-position="fixed" id="page_scripts_edit_header" >
                         <a href="" data-icon="back" data-role="button" data-iconpos="notext"
                            onclick=" $.mobile.changePage($('#' + page.SCRIPTS), util.backTransOpt);"></a>
-                        <h1>dummy</h1>
+                        <h1></h1>
                         <a href=""  data-icon="check" data-role="button" data-iconpos="notext"
                            onclick=" $('#script_edit_form').submit(); "></a>
 
@@ -199,11 +201,9 @@
                             <div data-role="fieldcontain" class="selects">
                                 <label for="script_edit_protocol">Protocol: </label>
                                 <select name="script_edit_protocol" id="script_edit_protocol" data-inline="false"
-                                        data-mini="true">
+                                        data-mini="true" onchange="script.protocolSelected();">
                                     <option value="default" selected="selected">Select protocol...</option>
-                                    <option value="5">pet</option>
-                                    <option value="32">tricet dva</option>
-                                    <option value="48">ctyricet osm</option>
+                                    <option value="create_new">Create new protocol...</option>
                                 </select>
                                 <label hidden="hidden" id="script_edit_protocol-error" class="error" for="script_edit_protocol"></label>
                             </div>
@@ -211,7 +211,7 @@
                                 <label for="script_edit_role">Role: </label>
                                 <select name="script_edit_role" id="script_edit_role" data-inline="true"
                                         data-mini="true">
-                                    <option value="2">Private</option>
+                                    <option selected="selected" value="2">Private</option>
                                     <option value="1">Public</option>
                                 </select>
                             </div>
@@ -248,9 +248,6 @@
 
 
 
-
-
-
             <!-- PROTOCOLS -->
             <div data-role="page" id="page_protocols" data-position="fixed">
 
@@ -258,9 +255,8 @@
                     <a href=""  data-icon="back" data-role="button" data-iconpos="notext"
                        onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
                     <h1>Protocols</h1>
-                    <a href="" data-icon="refresh" data-role="button" data-iconpos="notext"
-                       onclick=" protocol.updateList(); "></a>
-
+                    <a href="" id="protocol_update_button" data-icon="refresh" data-role="button" data-iconpos="notext"
+                       ></a>
                 </div><!-- /header -->
 
                 <div data-role="content">
@@ -269,18 +265,18 @@
                 </div><!-- /content -->
 
                 <div data-role="footer"  data-position="fixed">
-                    <a href="" style="float: right; margin-right: 5px;"  data-icon="plus" data-role="button" data-iconpos="notext"
-                       onclick=" protocol.add();"></a>
+                    <a href="" id="protocol_add_button" style="float: right; margin-right: 5px;"  data-icon="plus"
+                       data-role="button" data-iconpos="notext"></a>
 
                 </div>
             </div>
-            <!-- SCRIPTS EDIT -->
+            <!-- PROTOCOLS EDIT -->
             <div data-role="page" id="page_protocols_edit" data-position="fixed">
 
                 <div data-role="header" data-position="fixed" id="page_protocols_edit_header" >
                     <a href="" data-icon="back" data-role="button" data-iconpos="notext"
-                       onclick=" $.mobile.changePage($('#' + page.PROTOCOLS), util.backTransOpt);"></a>
-                    <h1>dummy</h1>
+                       id="protocol_back_button"></a>
+                    <h1></h1>
                     <a href=""  data-icon="check" data-role="button" data-iconpos="notext"
                        onclick=" $('#protocol_edit_form').submit(); "></a>
 
@@ -289,8 +285,10 @@
                 <div data-role="content">
                     <form method="post" id="protocol_edit_form" novalidate="novalidate">
 
+                        <!--<h4>SSH connection</h4>-->
                             <span id="hidden_protocol_id" hidden="hidden">
                             </span>
+
 
                         <div data-role="fieldcontain">
                             <label for="protocol_edit_name">Name: </label>
@@ -302,33 +300,35 @@
                             <input type="text" name="protocol_edit_desc" value="" id="protocol_edit_desc"  />
                             <label hidden="hidden" id="protocol_edit_desc-error" class="error" for="protocol_edit_desc"></label>
                         </div>
-                        <div data-role="fieldcontain">
-                            <label for="protocol_edit_ip">IP Address: </label>
-                            <input type="text" name="protocol_edit_ip" value="" id="protocol_edit_ip"  />
-                            <label hidden="hidden" id="protocol_edit_ip-error" class="error" for="protocol_edit_ip"></label>
-                        </div>
-                        <div data-role="fieldcontain">
-                            <label for="protocol_edit_content">Content: </label>
-                            <textarea name="protocol_edit_content" id="protocol_edit_content" >#!/bin/bash</textarea>
-                            <label hidden="hidden" id="protocol_edit_content-error" class="error" for="protocol_edit_content"></label>
-                        </div>
-
-                        <div data-role="fieldcontain" class="selects">
-                            <label for="protocol_edit_protocol">Protocol: </label>
-                            <select name="protocol_edit_protocol" id="protocol_edit_protocol" data-inline="false"
+                        <div data-role="fieldcontain" class="selects" data-mini="true" >
+                            <label for="protocol_edit_type">Type: </label>
+                            <select name="protocol_edit_type" id="protocol_edit_type" data-inline="true"
                                     data-mini="true">
-                                <option value="default" selected="selected">Select protocol...</option>
-                                <option value="5">pet</option>
-                                <option value="32">tricet dva</option>
-                                <option value="48">ctyricet osm</option>
+                                <option selected="selected" value="ssh">SSH</option>
+                                <option disabled="disabled" value="snmp">SNMP</option>
                             </select>
-                            <label hidden="hidden" id="protocol_edit_protocol-error" class="error" for="protocol_edit_protocol"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="protocol_edit_login">Login: </label>
+                            <input type="text" name="protocol_edit_login" value="" id="protocol_edit_login"  />
+                            <label hidden="hidden" id="protocol_edit_login-error" class="error" for="protocol_edit_login"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="protocol_edit_password">Password: </label>
+                            <input type="password" name="protocol_edit_password" value="" id="protocol_edit_password"  />
+                            <label hidden="hidden" id="protocol_edit_password-error" class="error" for="protocol_edit_password"></label>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="protocol_edit_port">Port: </label>
+                            <input min="1" max="65535" value="22" type="number" name="protocol_edit_port" value=""
+                                   id="protocol_edit_port"  />
+                            <label hidden="hidden" id="protocol_edit_port-error" class="error" for="protocol_edit_port"></label>
                         </div>
                         <div data-role="fieldcontain" class="selects">
                             <label for="protocol_edit_role">Role: </label>
                             <select name="protocol_edit_role" id="protocol_edit_role" data-inline="true"
                                     data-mini="true">
-                                <option value="2">Private</option>
+                                <option selected="selected" value="2">Private</option>
                                 <option value="1">Public</option>
                             </select>
                         </div>
@@ -348,7 +348,7 @@
                         <p>This action cannot be undone.</p>
                         <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
                         <a href=""  data-role="button" data-inline="true" data-transition="flow" style="float: right;"
-                           data-theme="c" onclick="protocol.del();">Delete</a>
+                           data-theme="c" id="protocol_delete_button">Delete</a>
                     </div>
                 </div>
 
@@ -401,7 +401,7 @@
 
                             <div data-role="fieldcontain" id="ws_hidden_url" >
                                 <label for="ws_url">URL: </label>
-                                <input type="text" name="ws_url" value="https://127.0.0.1/co-sc/v1/" id="ws_url" placeholder="Web service URL: http://" />
+                                <input type="text" name="ws_url" value="https://" id="ws_url" placeholder="Web service URL: http://" />
                                 <label hidden="hidden" id="ws_url-error" class="error" for="ws_url"></label>
                             </div>
 
@@ -501,7 +501,6 @@
         <script type="text/javascript" src="js/scripts.js"></script>
         <script type="text/javascript" src="js/settings.js"></script>
 
-        <script type="text/javascript" src="js/protocols.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
 
     </body>
