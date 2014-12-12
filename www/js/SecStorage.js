@@ -61,6 +61,7 @@ SecStorage = function (pass) {
         util.storage.setItem(secStorage.HASHED_PASS_KEY, hash);
         _pass = pass;
         _passSet = true;
+
         $.mobile.changePage($('#' + page.INDEX), util.transOpt);
     }
 

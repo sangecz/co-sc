@@ -123,12 +123,14 @@ var settings = {
             var name = $('#' + settings.ws.NAME_ID).val();
             var password = $('#' + settings.ws.PASSWORD_ID).val();
 
+            restConn.setURL(url);
+
             if($('#ws_register').is(':checked')){
                 // register
-                restConn.register(url, username, password, name);
+                restConn.register(username, password, name);
             } else {
                 // login
-                restConn.auth(url, username, password);
+                restConn.auth(username, password);
             }
         },
 
@@ -257,7 +259,7 @@ $('textarea').addClass('ui-mini');
                 $("#settings_overview_form").submit();
                 return false;
             });
-
+        ///////////////////////////////////////////////////
             $('#settings_ws_form').validate({
                 rules: {
                     ws_url: {

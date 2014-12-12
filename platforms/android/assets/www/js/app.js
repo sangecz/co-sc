@@ -112,6 +112,22 @@ app.initialize();
                 },
                 submitHandler: function(form) {
                     secStorage.submitPass($('#enterpin_pin').val());
+
+                    if (secStorage.isInstanceSet()) {
+                        settings.ws.load();
+
+                        if(settings.ws.storageObject) {
+                            if(settings.ws.storageObject.url) {
+                                restConn.init(settings.ws.storageObject.url);
+                                restConn.setApiKey(settings.ws.storageObject.apikey);
+                            } else {
+                                util.toast('Web Service URL not set. Go to settings.');
+                            }
+                        }
+                    } else {
+                        util.toast('You must enter passphrase first.');
+                        app.onResumeApp();
+                    }
                 }
             });
             $("#submit_pin").click(function(){

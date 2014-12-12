@@ -76,7 +76,6 @@
 /home/sange/projects/android/co-sc/platforms/android/assets/www/lib/crypto/enc-base64-min.js \
 /home/sange/projects/android/co-sc/platforms/android/assets/www/lib/crypto/sha512.js \
 /home/sange/projects/android/co-sc/platforms/android/assets/www/lib/jquery/jquery.rest.js \
-/home/sange/projects/android/co-sc/platforms/android/assets/www/lib/jquery/jquery.rest.min.js \
 /home/sange/projects/android/co-sc/platforms/android/assets/www/lib/jquery/jquery.mobile.inline-png-1.4.5.min.css \
 /home/sange/projects/android/co-sc/platforms/android/assets/www/lib/jquery/jquery.mobile-1.4.5.js \
 /home/sange/projects/android/co-sc/platforms/android/assets/www/lib/jquery/jquery.validate.min.js \

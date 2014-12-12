@@ -11,10 +11,14 @@ var protocol = {
 
     openView : function(){
         if (secStorage.isInstanceSet()) {
-            settings.ws.load();
-            $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);
 
-            protocol.updateList();
+            if(restConn.isAuthenticated()) {
+                settings.ws.load();
+                $.mobile.changePage($('#' + page.PROTOCOLS), util.transOpt);
+                protocol.updateList();
+            } else {
+                util.toast('You must log in first. Go to settings');
+            }
         } else {
             util.toast('You must enter passphrase first.');
             app.onResumeApp();

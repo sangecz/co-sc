@@ -11,9 +11,16 @@ var script = {
 
     openView : function(){
         if (secStorage.isInstanceSet()) {
+
             settings.ws.load();
-            $.mobile.changePage($('#' + page.SCRIPTS), util.transOpt);
-            script.updateList();
+
+            if(restConn && restConn.isAuthenticated()) {
+                script.updateList();
+                $.mobile.changePage($('#' + page.SCRIPTS), util.transOpt);
+
+            } else {
+                util.toast('You must log in first. Go to settings');
+            }
         } else {
             util.toast('You must enter passphrase first.');
             app.onResumeApp();
@@ -21,9 +28,7 @@ var script = {
     },
 
     updateList: function (){
-        if(settings.ws.storageObject != null){
-            restConn.readScripts(settings.ws.storageObject.url);
-        }
+        restConn.readScripts();
     },
 
     refreshItems: function(array){
@@ -113,9 +118,7 @@ var script = {
 
     del: function() {
         var scriptId = $('#hidden_script_id').html();
-        if(settings.ws.storageObject != null){
-            restConn.deleteScript(settings.ws.storageObject.url, scriptId);
-        }
+        restConn.deleteScript(scriptId);
 
         $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
     },
@@ -131,9 +134,7 @@ var script = {
             newScript.protocol_id = $('#script_edit_protocol').val();
             newScript.ps_role_id = $('#script_edit_role').val();
 
-            if(settings.ws.storageObject != null){
-                restConn.createScript(settings.ws.storageObject.url, newScript);
-            }
+            restConn.createScript(newScript);
         } else {
             // editing
             var scriptId = $('#hidden_script_id').html();
@@ -146,17 +147,14 @@ var script = {
             curScript.protocol_id = $('#script_edit_protocol').val();
             curScript.ps_role_id = $('#script_edit_role').val();
 
-            if(settings.ws.storageObject != null){
-                restConn.updateScript(settings.ws.storageObject.url, curScript, scriptId);
-            }
+            restConn.updateScript(curScript, scriptId);
         }
         $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
     },
 
     runScript: function(scriptId) {
-        if(settings.ws.storageObject != null){
-            restConn.runScript(settings.ws.storageObject.url, scriptId);
-        }
+        restConn.runScript(scriptId);
+
     },
 
     showResult : function (data) {
@@ -185,7 +183,7 @@ var script = {
             newScript.id
             + ');"></a></li>'
         );
-        this.refreshList();
+        this.updateList();
     },
 
     onUpdated : function(updatedScript) {
@@ -193,6 +191,8 @@ var script = {
 
         this.scriptIdArray[updatedScript.id] = updatedScript;
         $('#script-' + updatedScript.id).html($('#script_edit_name').val());
+
+        this.updateList();
     },
 
     onDeleted : function (scriptId) {
