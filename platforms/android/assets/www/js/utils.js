@@ -70,9 +70,6 @@ var util = {
     },
 
     isOnline : function () {
-        if(!app.isRunningOnDevice())
-            return true;
-
         var networkState = navigator.connection.type;
 
         if (networkState != Connection.UNKNOWN && networkState != Connection.NONE) {

@@ -19,9 +19,8 @@ var restConn =  {
     },
 
     deleteScript : function(scriptId) {
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.scripts.del(scriptId);
 
             restConn.handleRequest(req, function() {
@@ -31,9 +30,8 @@ var restConn =  {
     },
 
     deleteProtocol : function(protocolId) {
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.protocols.del(protocolId);
 
             restConn.handleRequest(req, function() {
@@ -43,9 +41,8 @@ var restConn =  {
     },
 
     updateScript : function(updatedScript, scriptId) {
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.scripts.update(scriptId, {
                 script : JSON.stringify(updatedScript)
             });
@@ -57,12 +54,12 @@ var restConn =  {
     },
 
     updateProtocol : function(updatedProtocol, protocolId) {
-        $.mobile.loading('show');
         var prot = {
             protocol : JSON.stringify(updatedProtocol)
         };
 
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.protocols.update(protocolId, prot);
 
             restConn.handleRequest(req, function() {
@@ -72,9 +69,8 @@ var restConn =  {
     },
 
     createScript : function(newScript) {
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.scripts.create({
                 script : JSON.stringify(newScript)
             });
@@ -86,12 +82,12 @@ var restConn =  {
     },
 
     createProtocol : function(newProtocol) {
-        $.mobile.loading('show');
         var prot = {
             protocol : JSON.stringify(newProtocol)
         };
 
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.protocols.create(prot);
 
             restConn.handleRequest(req, function() {
@@ -101,9 +97,8 @@ var restConn =  {
     },
 
     runScript : function(scriptId) {
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.scripts.read(scriptId);
 
             req.done(function (data) {
@@ -111,22 +106,25 @@ var restConn =  {
                     script.showResult(data);
                 } else {
                     util.toast('Error: ' + data.ws.message);
+                    console.log('Error: ' + data.ws.message);
                 }
                 $.mobile.loading('hide');
             });
 
             req.fail(function(x, y, z){
                 util.toastLong('Error: ' + JSON.parse(x.responseText).ws.message);
+                console.log('Error: ' + JSON.parse(x.responseText).ws.message);
                 $.mobile.loading('hide');
             });
         }
     },
 
     readScripts : function () {
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
             var req = restConn.client.scripts.read();
+
+            console.log('readScripts');
 
             req.done(function (data) {
                 if (data.ws.error == false) {
@@ -145,11 +143,10 @@ var restConn =  {
     },
 
     readProtocols : function () {
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
-            var req = restConn.client.protocols.read();
+            $.mobile.loading('show');
 
+            var req = restConn.client.protocols.read();
             req.done(function (data) {
                 if (data.ws.error == false) {
                     protocol.refreshItems(data.data.protocols);
@@ -167,10 +164,9 @@ var restConn =  {
     },
 
     auth : function(username, password) {
-
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
+
             var req = restConn.client.login.create({
                 email: username,
                 password: password
@@ -178,9 +174,10 @@ var restConn =  {
 
             req.done(function (data) {
                 if (data.ws.error == false) {
-                    // stays saved until first restart, must be loaded
                     restConn.authOpts.apiKey = data.data.apiKey;
-                    settings.ws.onAuth(data.data.apiKey, restConn.url, username, password);
+                    // stays saved until first restart, must be loaded
+                    restConn.init(restConn.url);
+                    settings.ws.onAuth(restConn.authOpts.apiKey, restConn.url, username, password);
                 } else {
                     util.toast('Error: ' + data.ws.message);
                 }
@@ -195,10 +192,9 @@ var restConn =  {
     },
 
     register : function(username, password, name) {
-
-        $.mobile.loading('show');
-
         if(util.isOnline()) {
+            $.mobile.loading('show');
+
             var req = restConn.client.register.create({
                 email: username,
                 password: password,

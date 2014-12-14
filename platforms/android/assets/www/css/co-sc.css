@@ -36,8 +36,9 @@ h4 {
     margin-bottom: 10px;
 }
 
-#dialog_script_result {
-    max-height: 400px !important;
+#dialog_script_result-popup {
+    width: 90% !important;
+    height: 80% !important;
 }
 
 .selects {

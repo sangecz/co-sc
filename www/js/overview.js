@@ -11,12 +11,16 @@ var overview = {
         if (util.isOnline()) {
             if (this.url != null && this.username != null && this.password != null) {
                 var url = this.getHttpBasicAuthUrl();
-                window.open(url, '_blank', 'location=no');
+                console.log(url);
+                var ref = window.open(url, '_blank', 'location=no');
+                //ref.addEventListener('loadstart', function(event) { alert('start: ' + event.url); });
+                //ref.addEventListener('loadstart', function(event) { alert('start: ' + event.url); });
+                //ref.addEventListener('loadstop', function(event) { alert('stop: ' + event.url); });
+                //ref.addEventListener('loaderror', function(event) { alert('error: ' + event.message); });
+                //ref.addEventListener('exit', function(event) { alert(event.type); });
             } else {
                 util.toast('Monitoring properties not set. Go to Settings first.');
             }
-        } else {
-            util.toast('Offline. Could not proceed.');
         }
     },
 
@@ -26,7 +30,7 @@ var overview = {
             prefix = "http://";
         }
         if(/^https:\/\//.test(this.url)) {
-            prefix = "https//";
+            prefix = "https://";
         }
 
         var urlWOutPrefix = this.url.replace(prefix, '');

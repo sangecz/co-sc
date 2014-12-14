@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 
 <html>
@@ -6,7 +8,7 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
         <link rel="stylesheet" type="text/css" href="css/co-sc.css" />
 
         <link rel="stylesheet" type="text/css" href="lib/jquery/jquery.mobile-1.4.5.css" />
@@ -59,7 +61,7 @@
 
                         <div class="ui-grid-solo ui-responsive">
                               <div class="ui-block-a">
-                                <a href="" data-role="button" data-icon="check" data-iconpos="right" data-mini="true"
+                                <a href="" data-role="button" data-icon="check" data-iconpos="right"
                                    id="submit_pin">Unlock</a>
                             </div>
                         </div>
@@ -132,7 +134,7 @@
                        onclick=" $.mobile.changePage($('#' + page.INDEX), util.backTransOpt);"></a>
                     <h1>Scripts</h1>
                     <a href="" data-icon="refresh" data-role="button" data-iconpos="notext"
-                       onclick=" script.updateList(); "></a>
+                       id="script_update_button"></a>
 
                 </div><!-- /header -->
 
@@ -149,13 +151,16 @@
                             <b>Exit code: </b><span id="dialog_script_result_e"></span>
                             <h4>Output: </h4>
                             <p id="dialog_script_result_o"></p>
+                            <a href="#" data-role="button" data-mini="true" data-inline="false"
+                               id="dialog_script_result_close_button">Close</a>
                         </div>
+
                     </div>
                 </div><!-- /content -->
 
                 <div data-role="footer"  data-position="fixed">
-                    <a href="" style="float: right; margin-right: 5px;"  data-icon="plus" data-role="button" data-iconpos="notext"
-                       onclick=" script.add();"></a>
+                    <a href="" style="float: right; margin-right: 5px;"  data-icon="plus" data-role="button"
+                       data-iconpos="notext" id="script_add_button"></a>
 
                 </div>
             </div>
@@ -164,7 +169,7 @@
 
                     <div data-role="header" data-position="fixed" id="page_scripts_edit_header" >
                         <a href="" data-icon="back" data-role="button" data-iconpos="notext"
-                           onclick=" $.mobile.changePage($('#' + page.SCRIPTS), util.backTransOpt);"></a>
+                           id="script_back_button"></a>
                         <h1></h1>
                         <a href=""  data-icon="check" data-role="button" data-iconpos="notext"
                            onclick=" $('#script_edit_form').submit(); "></a>
@@ -231,7 +236,7 @@
                             <p>This action cannot be undone.</p>
                             <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
                             <a href=""  data-role="button" data-inline="true" data-transition="flow" style="float: right;"
-                               data-theme="c" onclick="script.del();">Delete</a>
+                               data-theme="c" id="script_delete_button">Delete</a>
                         </div>
                     </div>
 
@@ -320,8 +325,7 @@
                         </div>
                         <div data-role="fieldcontain">
                             <label for="protocol_edit_port">Port: </label>
-                            <input min="1" max="65535" value="22" type="number" name="protocol_edit_port" value=""
-                                   id="protocol_edit_port"  />
+                            <input min="1" max="65535" value="22" type="number" name="protocol_edit_port" id="protocol_edit_port"  />
                             <label hidden="hidden" id="protocol_edit_port-error" class="error" for="protocol_edit_port"></label>
                         </div>
                         <div data-role="fieldcontain" class="selects">
@@ -432,7 +436,7 @@
                             </div>
 
                             <div class="ui-block-a" id="ws_hidden_submit">
-                                <a href="" data-role="button"  data-icon="check" data-mini="true"
+                                <a href="" data-role="button"  data-icon="check"
                                        data-iconpos="right" id="submit_settings_ws">Login & Save</a>
                             </div>
                         </div>
@@ -462,7 +466,7 @@
                             </div>
 
                             <div data-role="fieldcontain" id="overview_hidden_submit">
-                                <a href="" data-mini="true" data-role="button" data-icon="check"
+                                <a href="" data-role="button" data-icon="check"
                                    data-iconpos="right" id="submit_settings_overview">Save</a>
                             </div>
                         </div>
@@ -473,9 +477,9 @@
 
                     <div data-role="navbar">
                         <ul>
-                            <li><a href="#" id="settings_navbtn_1" data-iconpos="top"
+                            <li><a href="#" id="settings_navbtn_1" data-iconpos="top" data-mini="true"
                                    data-icon="cloud">Web Service</a></li>
-                            <li><a href="#" id="settings_navbtn_2" data-iconpos="top"
+                            <li><a href="#" id="settings_navbtn_2" data-iconpos="top" data-mini="true"
                                    data-icon="eye">Monitoring</a></li>
                         </ul>
 

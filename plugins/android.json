@@ -43,6 +43,9 @@
         },
         "org.apache.cordova.network-information": {
             "PACKAGE_NAME": "cz.sange.cosc"
+        },
+        "org.apache.cordova.console": {
+            "PACKAGE_NAME": "cz.sange.cosc"
         }
     },
     "dependent_plugins": {}

@@ -33,7 +33,6 @@ var app = {
 
         $("#enterpin").trigger("pagecreate");
 
-        //alert(util.isOnline());
     },
 
     onBackKeyDown: function () {
@@ -54,7 +53,7 @@ var app = {
             $.mobile.changePage($('#' + page.SCRIPTS), util.backTransOpt);
 
         } else if($.mobile.activePage.attr('id') == page.PROTOCOLS_EDIT) {
-
+            console.log('onbackHW PROTOCOLS_EDIT');
             protocol.onBack();
 
         } else {
@@ -72,20 +71,12 @@ var app = {
     onResumeApp : function() {
         setTimeout(function(){
 
-            $.mobile.changePage($('#' + page.ENTERPIN), util.backTransOpt);
             $( "#unlock_hedline" ).html('Unlock app');
             $( "#submit_pin" ).html('Unlock');
             $('#enterpin_pin').val('');
+            $.mobile.changePage($('#' + page.ENTERPIN), util.backTransOpt);
         }, 0);
     },
-
-    isRunningOnDevice : function() {
-        var app = (document.URL.indexOf( 'http://' ) === -1
-            && document.URL.indexOf( 'https://' ) === -1
-            && document.URL.indexOf( 'file://' ) === -1);
-       return app;
-    },
-
     onDeniedAccess : function () {
         util.toast('You must enter passphrase first.');
         app.onResumeApp();

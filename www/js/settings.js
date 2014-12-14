@@ -36,6 +36,10 @@ var settings = {
         del : function () {
             this.clearValues();
             util.storage.removeItem(settings.overview.STORAGE_KEY);
+            this.storageObject = {};
+            this.storageObject.url = null;
+            this.storageObject.username = null;
+            this.storageObject.password = null;
         },
 
         load : function () {
@@ -128,6 +132,11 @@ var settings = {
         del : function () {
             this.clearValues();
             util.storage.removeItem(settings.ws.STORAGE_KEY);
+            this.storageObject = {};
+            this.storageObject.url = null;
+            this.storageObject.username = null;
+            this.storageObject.password = null;
+            this.storageObject.apikey = null;
         },
 
         handleSubmit : function() {
@@ -136,6 +145,9 @@ var settings = {
             var name = $('#' + settings.ws.NAME_ID).val();
             var password = $('#' + settings.ws.PASSWORD_ID).val();
 
+            if(restConn.client == '') {
+                restConn.init(url);
+            }
             restConn.setURL(url);
 
             if($('#ws_register').is(':checked')){
@@ -159,7 +171,7 @@ var settings = {
             $("#ws_hidden_name").hide();
             $("#submit_settings_ws").html('Login & Save');
             if ($('#ws_register').is(":checked")) {
-                $('#ws_register').prop('checked', false).checkboxradio('refresh');
+                $('#ws_register').checkboxradio().prop('checked', false).checkboxradio('refresh');
             }
         },
 
@@ -175,6 +187,7 @@ var settings = {
     del : function() {
         this.overview.del();
         this.ws.del();
+        restConn.setApiKey(util.UNDEF);
 
         $( "#dialog_delete_settings" ).popup( "close" );
     },
@@ -273,7 +286,10 @@ $('textarea').addClass('ui-mini');
                         required: true,
                         url: true
                     },
-                    ws_username: "required",
+                    ws_username: {
+                        required: true,
+                        email: true
+                    },
                     ws_name: "required",
                     ws_password: "required"
                 },
@@ -282,7 +298,10 @@ $('textarea').addClass('ui-mini');
                         required: "Please enter valid URL.",
                         url: "Not a valid URL."
                     },
-                    ws_username: "Please enter your email.",
+                    ws_username: {
+                        required: "Please enter your email.",
+                        email: "Please enter a valid email."
+                    },
                     ws_name: "Please enter your name.",
                     ws_password: "Please enter your password."
                 },

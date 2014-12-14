@@ -6,11 +6,16 @@ var secStorage = {
     HASHED_PASS_KEY: 'hashed_pass',
     instance : util.UNDEF,
 
+    isInstanceSet : function() {
+        return (this.instance && this.instance != util.UNDEF);
+    },
+
     forgetPass : function() {
 
         util.storage.removeItem(secStorage.HASHED_PASS_KEY);
-        util.storage.removeItem(settings.ws.STORAGE_KEY);
-        util.storage.removeItem(settings.overview.STORAGE_KEY);
+
+        settings.overview.del();
+        settings.ws.del();
 
         if(secStorage.isInstanceSet()){
             this.instance.removePass();
@@ -31,11 +36,9 @@ var secStorage = {
         $( "#unlock_hedline" ).html('Enter new passphrase');
         $( "#unlock_hedline" ).css('width', '10em');
         $( "#submit_pin" ).html('Enter');
-    },
-
-    isInstanceSet : function() {
-        return (this.instance != util.UNDEF && this.instance != null);
     }
+
+
 };
 
 SecStorage = function (pass) {
@@ -94,4 +97,4 @@ SecStorage = function (pass) {
     };
 
 
-}
+};

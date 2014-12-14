@@ -27,7 +27,8 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "org.apache.cordova.inappbrowser": "0.5.3",
-    "org.apache.cordova.network-information": "0.2.13"
+    "org.apache.cordova.network-information": "0.2.13",
+    "org.apache.cordova.console": "0.2.12"
 }
 // BOTTOM OF METADATA
 });
