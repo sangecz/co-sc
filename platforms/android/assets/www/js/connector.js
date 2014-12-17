@@ -11,7 +11,7 @@ var restConn =  {
     },
 
     init : function(url) {
-        restConn.client = new $.RestClient(url, restConn.authOpts);
+        restConn.client = new $.RestClient(url, restConn.authOpts);  
         restConn.client.add('register');
         restConn.client.add('login');
         restConn.client.add('scripts');
