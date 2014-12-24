@@ -197,17 +197,19 @@ var script = {
 
     showResult : function (data) {
 
-        //$( "#dialog_script_result_m").html(data.ws.message);
-        $( "#dialog_script_result_o").html(data.data.scriptOutput);
-        $( "#dialog_script_result_e").html(data.data.exitCode);
-        $( "#dialog_script_result" ).css('overflow-y', 'scroll');
-        $( "#dialog_script_result" ).css('width', '90% !important');
-        $( "#dialog_script_result" ).css('height', '90% !important');
-        $( "#dialog_script_result" ).popup( "open" );
+        alert('ExitCode: ' + data.data.exitCode + ' \n' + data.data.scriptOutput);
 
-        $(document).off('click', '#dialog_script_result_close_button').on('click', '#dialog_script_result_close_button', function (e) {
-            $( "#dialog_script_result" ).popup( "close" );
-        });
+        //$( "#dialog_script_result_m").html(data.ws.message);
+        //$( "#dialog_script_result_o").html(data.data.scriptOutput);
+        //$( "#dialog_script_result_e").html(data.data.exitCode);
+        //$( "#dialog_script_result" ).css('overflow-y', 'scroll');
+        //$( "#dialog_script_result" ).css('width', '90% !important');
+        //$( "#dialog_script_result" ).css('height', '90% !important');
+        //$( "#dialog_script_result" ).popup( "open" );
+        //
+        //$(document).off('click', '#dialog_script_result_close_button').on('click', '#dialog_script_result_close_button', function (e) {
+        //    $( "#dialog_script_result" ).popup( "close" );
+        //});
 
     },
 

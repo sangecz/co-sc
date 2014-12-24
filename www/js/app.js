@@ -35,6 +35,8 @@ var app = {
 
         $("#enterpin").trigger("pagecreate");
 
+        app.initEnterPinPage();
+
     },
 
     onBackKeyDown: function () {
@@ -72,13 +74,27 @@ var app = {
 
     onResumeApp : function() {
         setTimeout(function(){
-
-            $( "#unlock_hedline" ).html('Unlock app');
-            $( "#submit_pin" ).html('Unlock');
-            $('#enterpin_pin').val('');
+            app.initEnterPinPage();
             $.mobile.changePage($('#' + page.ENTERPIN), util.backTransOpt);
         }, 0);
     },
+
+    initEnterPinPage: function(){
+        var headline = '';
+        var btn = '';
+        if(util.storage.getItem(secStorage.HASHED_PASS_KEY) == null) {
+            headline = 'Enter new passphrase';
+            btn = 'Enter';
+        } else {
+            headline = 'Unlock app';
+            btn = 'Unlock';
+        }
+
+        $( "#unlock_hedline" ).html(headline);
+        $( "#submit_pin" ).html(btn);
+        $('#enterpin_pin').val('');
+    },
+
     onDeniedAccess : function () {
         util.toast('You must enter passphrase first.');
         app.onResumeApp();

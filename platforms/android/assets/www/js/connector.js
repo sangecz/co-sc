@@ -1,6 +1,34 @@
 /**
  * Created by sange on 11/24/14.
  */
+testConn = {
+    testMonitoringURL : function () {
+        if(util.isOnline()) {
+            var url = $('#' + settings.overview.URL_ID).val();
+            var username = $('#' + settings.overview.USERNAME_ID).val();
+            var password = $('#' + settings.overview.PASSWORD_ID).val();
+
+            var urlStr =  overview.getHttpBasicAuthUrl(username, password, url);
+
+            var jqxhr = $.get( urlStr, function() {
+                alert( "success" );
+                settings.overview.save();
+            })
+                .fail(function() {
+                    if(jqxhr.status == 404) {
+                        util.toastLong("Error: URL not found.");
+                    } else if (jqxhr.status == 401) {
+                        util.toastLong("Error: Invalid credentials.");
+                    } else {
+                        util.toastLong("Error: Something went wrong.");
+                    }
+                });
+                //.always(function() {
+                //    alert( "finished" );
+                //});
+        }
+    }
+};
 
 var restConn =  {
 
@@ -11,7 +39,7 @@ var restConn =  {
     },
 
     init : function(url) {
-        restConn.client = new $.RestClient(url, restConn.authOpts);  
+        restConn.client = new $.RestClient(url, restConn.authOpts);
         restConn.client.add('register');
         restConn.client.add('login');
         restConn.client.add('scripts');
@@ -234,6 +262,8 @@ var restConn =  {
             util.toastLong('Error: ' + JSON.parse(x.responseText).ws.message);
             $.mobile.loading('hide');
         });
-    }
+    },
+
+
 };
 

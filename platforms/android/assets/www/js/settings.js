@@ -272,7 +272,7 @@ $('textarea').addClass('ui-mini');
                     overview_password: "Please enter your password."
                 },
                 submitHandler: function(form) {
-                        settings.overview.save();
+                    testConn.testMonitoringURL();
                 }
             });
             $("#submit_settings_overview").click(function(){

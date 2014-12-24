@@ -10,7 +10,7 @@ var overview = {
 
         if (util.isOnline()) {
             if (this.url != null && this.username != null && this.password != null) {
-                var url = this.getHttpBasicAuthUrl();
+                var url = this.getHttpBasicAuthUrl(this.username, this.password, this.url);
                 console.log(url);
                 var ref = window.open(url, '_blank', 'location=no');
                 //ref.addEventListener('loadstart', function(event) { alert('start: ' + event.url); });
@@ -24,18 +24,18 @@ var overview = {
         }
     },
 
-    getHttpBasicAuthUrl : function(){
+    getHttpBasicAuthUrl : function(username, password, url){
         var prefix = "";
-        if(/^http:\/\//.test(this.url)) {
+        if(/^http:\/\//.test(url)) {
             prefix = "http://";
         }
-        if(/^https:\/\//.test(this.url)) {
+        if(/^https:\/\//.test(url)) {
             prefix = "https://";
         }
 
-        var urlWOutPrefix = this.url.replace(prefix, '');
+        var urlWOutPrefix = url.replace(prefix, '');
 
-        var resUrl = prefix + this.username + ':' + this.password + '@' + urlWOutPrefix;
+        var resUrl = prefix + username + ':' + password + '@' + urlWOutPrefix;
         return resUrl;
     }
 
