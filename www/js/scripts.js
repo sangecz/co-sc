@@ -1,6 +1,9 @@
 /**
- * Created by sange on 11/21/14.
+ * @author Petr Marek
+ * Licence Apache 2.0, see below link
+ * @link http://www.apache.org/licenses/LICENSE-2.0
  */
+
 
 
 var script = {
@@ -271,6 +274,14 @@ var script = {
 
 };
 
+
+/**
+ * Scripts edit page form validation.
+ * For more info, @see app.js.
+ *
+ * Based on tut below.
+ * @link http://www.sitepoint.com/basic-jquery-form-validation-tutorial/
+ */
 (function($,W,D) {
     var JQUERY4U = {};
 
@@ -317,7 +328,6 @@ var script = {
         }
     };
 
-    //when the dom has loaded setup form validation rules
     $(D).ready(function($) {
         JQUERY4U.UTIL.setupFormValidation();
     });

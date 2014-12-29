@@ -1,26 +1,52 @@
 /**
- * Created by sange on 11/21/14.
+ * @author Petr Marek
+ * Licence Apache 2.0, see below link
+ * @link http://www.apache.org/licenses/LICENSE-2.0
  */
 
-
+/**
+ * Module: protocols - corresponds with Protocols section in app.
+ *
+ * @type {{addToggle: boolean, fromScripts: boolean, createNewSelected: boolean, protocolIdArray: Array, onBack: Function, openView: Function, updateList: Function, refreshItems: Function, refreshList: Function, edit: Function, add: Function, del: Function, save: Function, onCreated: Function, onUpdated: Function, onDeleted: Function, bindOnClicks: Function}}
+ */
 var protocol = {
 
+    /**
+     * add or edit
+     */
     addToggle : false,
+
+    /**
+     * how the user got here
+     */
     fromScripts : false,
+
+    /**
+     * in script's add/edit page was selected create new protocol (or not)
+     */
     createNewSelected : false,
+
+    /**
+     * local array of protocols
+     */
     protocolIdArray : [],
 
+    /**
+     * Handles back button, whether to go to scripts edit page or protocols page
+     */
     onBack : function () {
         if(protocol.fromScripts) {
             protocol.fromScripts = false;
             history.back();
-            console.log('fromScripts');
         } else {
-            console.log('normalne');
             $.mobile.changePage($('#' + page.PROTOCOLS), util.backTransOpt);
         }
     },
 
+    /**
+     * Loads props from secStorage and loads (updates) Protocols list.
+     * If WS not set prompt to go to the settings.
+     */
     openView : function(){
         settings.ws.load();
 
@@ -43,6 +69,11 @@ var protocol = {
         restConn.readProtocols();
     },
 
+    /**
+     * Refreshes list of protocols - from DB.
+     *
+     * @param array protocols fetched from DB
+     */
     refreshItems: function(array){
         // first empty listview and array
         protocol.protocolIdArray = [];
@@ -96,12 +127,20 @@ var protocol = {
         this.refreshList();
     },
 
+    /**
+     * Refreshes list - UI component.
+     */
     refreshList: function () {
         if($.mobile.activePage.attr('id') == page.PROTOCOLS) {
             $('#protocols_list').listview().listview('refresh');
         }
     },
 
+
+    /**
+     * Edit protocol was clicked - gather texts from input fields and try to save it.
+     * @param protocolId
+     */
     edit: function(protocolId){
         $('#page_protocols_edit_header h1').html("Edit Protocol");
         protocol.addToggle = false;
@@ -123,6 +162,9 @@ var protocol = {
 
     },
 
+    /**
+     * Add protocol was clicked - gather texts from input fields and try to save it.
+     */
     add : function() {
         $('#page_protocols_edit_header h1').html("Add Protocol");
         protocol.addToggle = true;
@@ -141,6 +183,9 @@ var protocol = {
         $.mobile.changePage("#" + page.PROTOCOLS_EDIT, util.transOpt);
     },
 
+    /**
+     * Delete protocol clicked and confirmed.
+     */
     del: function() {
 
         var protocolId = $('#hidden_protocol_id').html();
@@ -149,6 +194,9 @@ var protocol = {
         $.mobile.changePage("#" + page.PROTOCOLS, util.backTransOpt);
     },
 
+    /**
+     * Save protocol clicked - determine if edit or add REST method should be used.
+     */
     save: function() {
         var prot = {};
         prot.name = $('#protocol_edit_name').val();
@@ -179,6 +227,11 @@ var protocol = {
         this.onBack();
     },
 
+    /**
+     * Callback when creating new protocol was successful.
+     * Add protocol to the list and updateList to keep sync.
+     * @param newProtocol
+     */
     onCreated : function(newProtocol) {
 
         this.protocolIdArray[newProtocol.id] = newProtocol;
@@ -198,6 +251,13 @@ var protocol = {
 
     },
 
+
+    /**
+     * Callback when protocol updated successfully, also update protocol-array.
+     * UpdateList to keep sync.
+     *
+     * @param updatedProtocol
+     */
     onUpdated : function(updatedProtocol) {
         util.toast('Protocol updated');
 
@@ -207,6 +267,12 @@ var protocol = {
         this.updateList();
     },
 
+    /**
+     * Callback when protocol deletion was successful. Update lists then to keep sync.
+     * UpdateList to keep sync.
+     *
+     * @param protocolId
+     */
     onDeleted : function (protocolId) {
         util.toast('Protocol deleted');
         $('#protocols_list #' + protocolId).parent().remove();
@@ -223,6 +289,9 @@ var protocol = {
 
     },
 
+    /**
+     * Binds onClick events: back, delete, add, refresh (updateList)
+     */
     bindOnClicks : function () {
         $(document).off('click', '#protocol_back_button').on('click', '#protocol_back_button', function (e) {
             protocol.onBack();
@@ -242,6 +311,13 @@ var protocol = {
     }
 };
 
+/**
+ * Protocols edit page form validation.
+ * For more info, @see app.js.
+ *
+ * Based on tut below.
+ * @link http://www.sitepoint.com/basic-jquery-form-validation-tutorial/
+ */
 (function($,W,D) {
     var JQUERY4U = {};
 
@@ -275,7 +351,6 @@ var protocol = {
         }
     };
 
-    //when the dom has loaded setup form validation rules
     $(D).ready(function($) {
         JQUERY4U.UTIL.setupFormValidation();
     });

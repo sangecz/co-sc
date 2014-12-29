@@ -1,15 +1,32 @@
 /**
- * Created by sange on 11/24/14.
+ * @author Petr Marek
+ * Licence Apache 2.0, see below link
+ * @link http://www.apache.org/licenses/LICENSE-2.0
  */
 
+/**
+ * secStorage object is a secure wrapper for localStorage. It encrypts provided JSON
+ * object with provided passphrase. When passphrase is forgotten,
+ * newone could be created, but all data saved with old passphrase will be deleted.
+ *
+ * @type {{HASHED_PASS_KEY: string, instance: (util.UNDEF|*), isInstanceSet: Function, forgetPass: Function, submitPass: Function, setForgetPassProp: Function}}
+ */
 var secStorage = {
     HASHED_PASS_KEY: 'hashed_pass',
     instance : util.UNDEF,
 
+    /**
+     * Checks if the instance is set.
+     * @returns {*|boolean}
+     */
     isInstanceSet : function() {
         return (this.instance && this.instance != util.UNDEF);
     },
 
+    /**
+     * Forgets passphrase and deletes all encrypted data. It prompts the user
+     * to enter new passphrase.
+     */
     forgetPass : function() {
 
         util.storage.removeItem(secStorage.HASHED_PASS_KEY);
@@ -26,10 +43,17 @@ var secStorage = {
         util.toast('Passphrase has been deleted. Please, enter new one.');
     },
 
+    /**
+     * Submits passphrase - initiates secStorage wrapper.
+     * @param pin
+     */
     submitPass : function(pin) {
         this.instance = new SecStorage(pin);
     },
 
+    /**
+     * Helper method when passphrase is forgotten - sets UI components.
+     */
     setForgetPassProp: function(){
         $('#enterpin_pin').val('');
         $( "#dialog_unlock_forget" ).popup( "close" );
@@ -41,6 +65,14 @@ var secStorage = {
 
 };
 
+/**
+ * Secure storage - localStorage wrapper.
+ * It creates new password or checks the old one, depends
+ * if passphrase hash is present in localStorage.
+ *
+ * @param pass
+ * @constructor SecStorage
+ */
 SecStorage = function (pass) {
 
     var _passSet = false;
@@ -68,6 +100,13 @@ SecStorage = function (pass) {
         $.mobile.changePage($('#' + page.INDEX), util.transOpt);
     }
 
+    /**
+     * Encrypts stringified JSON object and saves it with corresponding key.
+     *
+     * @param json object to be encrypted and stored
+     * @param key
+     * @returns {boolean}
+     */
     this.saveToStorage = function (json, key) {
         if (typeof _passSet != util.UNDEF && _passSet == true) {
             var encrypted = CryptoJS.TripleDES.encrypt(JSON.stringify(json), _pass);
@@ -77,6 +116,13 @@ SecStorage = function (pass) {
         return false
     };
 
+    /**
+     * Loads encrypted stringified JSON object with corresponding key.
+     * Then it decrypts the object with provided passphrase and returns plain JSON object.
+     *
+     * @param key
+     * @returns json object - decrypted
+     */
     this.loadFromStorage = function (key) {
         var encrypted = util.storage.getItem(key);
 

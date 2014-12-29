@@ -1,9 +1,24 @@
 /**
- * Created by sange on 11/23/14.
+ * @author Petr Marek
+ * Licence Apache 2.0, see below link
+ * @link http://www.apache.org/licenses/LICENSE-2.0
  */
 
+
+/**
+ * Module: settings - corresponds wit app section Settings and it provides settings
+ * for both Web Service and Monitoring tool instance. When Loading/Saving -
+ * if there is no instance of secStorage, it's unauthorized access and the user will
+ * be send to Enter pin (passphrase) page.
+ *
+ * @type {{overview: {URL_ID: string, USERNAME_ID: string, PASSWORD_ID: string, STORAGE_KEY: string, storageObject: {url: null, password: null, username: null}, save: Function, del: Function, load: Function, clearValues: Function}, ws: {URL_ID: string, USERNAME_ID: string, PASSWORD_ID: string, APIKEY_ID: string, NAME_ID: string, STORAGE_KEY: string, storageObject: {url: null, password: null, apikey: null, username: null}, save: Function, load: Function, del: Function, handleSubmit: Function, clearValues: Function, onRegistered: Function, onAuth: Function}, del: Function, save: Function, load: Function}}
+ */
 var settings = {
 
+    /**
+     * settings.overview object - handles monitoring tool instance
+     * properties - URL and credentials.
+     */
     overview : {
 
         URL_ID : "overview_url",
@@ -12,12 +27,18 @@ var settings = {
 
         STORAGE_KEY : "overview",
 
+        /**
+         * JSON object to be stored
+         */
         storageObject : {
             url : null,
             password : null,
             username : null
         },
 
+        /**
+         * Gathers strings from input forms and tries to save them in secStorage.
+         */
         save : function () {
             this.storageObject = {};
             this.storageObject.url = $('#' + this.URL_ID).val();
@@ -33,6 +54,9 @@ var settings = {
             }
         },
 
+        /**
+         * Deletes stored object and dynamic object.
+         */
         del : function () {
             this.clearValues();
             util.storage.removeItem(settings.overview.STORAGE_KEY);
@@ -42,6 +66,9 @@ var settings = {
             this.storageObject.password = null;
         },
 
+        /**
+         * Tries to load properties to the form input fields and dynamic object.
+         */
         load : function () {
             if (secStorage.isInstanceSet()) {
                 this.storageObject = secStorage.instance.loadFromStorage(this.STORAGE_KEY);
@@ -64,6 +91,9 @@ var settings = {
 
         },
 
+        /**
+         * Clears form input fileds.
+         */
         clearValues : function(){
             $('#' + this.URL_ID).val('');
             $('#' + this.USERNAME_ID).val('');
@@ -72,6 +102,10 @@ var settings = {
 
     },
 
+    /**
+     * settings.ws object - handles Web Service
+     * properties - URL, credentials and apiKey.
+     */
     ws : {
 
         URL_ID : "ws_url",
@@ -82,6 +116,9 @@ var settings = {
 
         STORAGE_KEY : "ws",
 
+        /**
+         * JSON object to be stored
+         */
         storageObject : {
             url : null,
             password : null,
@@ -89,6 +126,9 @@ var settings = {
             username : null
         },
 
+        /**
+         * Gathers strings from input forms and tries to save them in secStorage.
+         */
         save : function(apiKey, url, username, password) {
             this.storageObject = {};
             this.storageObject.url = url;
@@ -106,6 +146,9 @@ var settings = {
 
         },
 
+        /**
+         * Tries to load properties to the form input fields and dynamic object.
+         */
         load : function() {
 
             if (secStorage.isInstanceSet()) {
@@ -129,6 +172,9 @@ var settings = {
             }
         },
 
+        /**
+         * Deletes stored object and dynamic object.
+         */
         del : function () {
             this.clearValues();
             util.storage.removeItem(settings.ws.STORAGE_KEY);
@@ -139,6 +185,10 @@ var settings = {
             this.storageObject.apikey = null;
         },
 
+        /**
+         * Handles submit - there are two situations - logging In or registering.
+         * Method also initializes restConn.
+         */
         handleSubmit : function() {
             var url = $('#' + settings.ws.URL_ID).val();
             var username = $('#' + settings.ws.USERNAME_ID).val();
@@ -159,6 +209,9 @@ var settings = {
             }
         },
 
+        /**
+         * Clears form input fileds.
+         */
         clearValues : function() {
             $('#' + this.URL_ID).val('');
             $('#' + this.USERNAME_ID).val('');
@@ -166,6 +219,9 @@ var settings = {
             $('#' + this.PASSWORD_ID).val('');
         },
 
+        /**
+         * Callback when registration was successfully done.
+         */
         onRegistered : function () {
             util.toast('Successfully registered.');
             $("#ws_hidden_name").hide();
@@ -175,8 +231,16 @@ var settings = {
             }
         },
 
+        /**
+         * Callback when the user is successfully logged In. It saves WS props.
+         * These prop. stay saved until the first restart, must be loaded again though.
+         *
+         * @param apiKey
+         * @param url
+         * @param username
+         * @param password
+         */
         onAuth : function (apiKey, url, username, password) {
-            // stays saved until first restart, must be loaded
             if (apiKey != null && apiKey != '') {
                 settings.ws.save(apiKey, url, username, password);
             }
@@ -184,6 +248,9 @@ var settings = {
 
     },
 
+    /**
+     * Calls delete method on corresponding object. Invalidates restConn apiKey.
+     */
     del : function() {
         this.overview.del();
         this.ws.del();
@@ -196,6 +263,11 @@ var settings = {
         //$.mobile.changePage($('#' + page.INDEX), util.backTransOpt);
     },
 
+    /**
+     * Calls load methods of corresponding objects.
+     * It also switches between WS and Monitoring settings sections
+     * (bottom navigation bar).
+     */
     load : function() {
 
         if (secStorage.isInstanceSet()) {
@@ -214,7 +286,9 @@ var settings = {
 
 };
 
-// enable registration
+/**
+ * Registration toggle handler.
+ */
 $('#ws_register').on('click', function() {
     if($(this).is(':checked')){
         $("#ws_hidden_name").show();
@@ -225,7 +299,9 @@ $('#ws_register').on('click', function() {
     }
 });
 
-// handle navbar in settings
+/**
+ * handle navigation bar in settings.
+ */
 $('#settings_navbtn_1').on('click', function() {
     $("#settings_content_1").show();
     $("#settings_content_2").hide();
@@ -233,6 +309,9 @@ $('#settings_navbtn_1').on('click', function() {
     $('#settings_navbtn_2').removeClass('ui-btn-active');
 });
 
+/**
+ * handle navigation bar in settings.
+ */
 $('#settings_navbtn_2').on('click', function() {
     $("#settings_content_2").show();
     $("#settings_content_1").hide();
@@ -240,13 +319,22 @@ $('#settings_navbtn_2').on('click', function() {
     $('#settings_navbtn_1').removeClass('ui-btn-active');
 });
 
+/**
+ * Sets small role properties to most of UI components.
+ */
 $('checkbox').buttonMarkup({mini: true});
 $('button').buttonMarkup({mini: true});
 $('#index button').buttonMarkup({mini: false});
 $('input').addClass('ui-mini');
 $('textarea').addClass('ui-mini');
 
-/** based on: http://www.sitepoint.com/basic-jquery-form-validation-tutorial/ */
+/**
+ * Settings page form validation.
+ * For more info, @see app.js.
+ *
+ * Based on tut below.
+ * @link http://www.sitepoint.com/basic-jquery-form-validation-tutorial/
+ */
 (function($,W,D) {
     var JQUERY4U = {};
 
@@ -316,7 +404,6 @@ $('textarea').addClass('ui-mini');
         }
     };
 
-    //when the dom has loaded setup form validation rules
     $(D).ready(function($) {
 
         JQUERY4U.UTIL.setupFormValidation();

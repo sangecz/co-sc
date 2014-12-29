@@ -1,5 +1,12 @@
 /**
- * Created by sange on 11/24/14.
+* @author Petr Marek
+* Licence Apache 2.0, see below link
+* @link http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+/**
+ * Testing connection to provided monitoring instance (URL and credentials).
+ * @type {{testMonitoringURL: Function}}
  */
 testConn = {
     testMonitoringURL : function () {
@@ -26,14 +33,35 @@ testConn = {
     }
 };
 
+/**
+ * REST connector. Uses jquery.rest lib for communication and route handling.
+ *
+ * @type {{url: (util.UNDEF|*), client: string, authOpts: {apiKey: (util.UNDEF|*)}, init: Function, deleteScript: Function, deleteProtocol: Function, updateScript: Function, updateProtocol: Function, createScript: Function, createProtocol: Function, runScript: Function, readScripts: Function, readProtocols: Function, auth: Function, register: Function, setURL: Function, setApiKey: Function, isAuthenticated: Function, handleRequest: Function}}
+ */
 var restConn =  {
 
+    /**
+     * URL
+     */
     url : util.UNDEF,
+
+    /**
+     * RestClient instance
+     */
     client : '',
+
+    /**
+     * Object for HTTP Authorization header - apiKey.
+     */
     authOpts : {
         apiKey : util.UNDEF
     },
 
+    /**
+     * Adding routes to the base URL scheme for further usage in CRUD methods.
+     *
+     * @param url
+     */
     init : function(url) {
         restConn.client = new $.RestClient(url, restConn.authOpts);
         restConn.client.add('register');
@@ -42,6 +70,10 @@ var restConn =  {
         restConn.client.add('protocols');
     },
 
+    /**
+     * Queries th WS to delete script
+     * @param scriptId script DB id
+     */
     deleteScript : function(scriptId) {
         if(util.isOnline()) {
             $.mobile.loading('show');
@@ -53,6 +85,10 @@ var restConn =  {
         }
     },
 
+    /**
+     * Queries th WS to delete protocol
+     * @param protocolId protocol DB id
+     */
     deleteProtocol : function(protocolId) {
         if(util.isOnline()) {
             $.mobile.loading('show');
@@ -120,6 +156,12 @@ var restConn =  {
         }
     },
 
+    /**
+     * Queries th WS to run script with scriptId. When successful call
+     * script.showResult method for displaying script output. When error occurs,
+     * it prints it.
+     * @param scriptId script DB id
+     */
     runScript : function(scriptId) {
         if(util.isOnline()) {
             $.mobile.loading('show');
@@ -187,6 +229,12 @@ var restConn =  {
         }
     },
 
+    /**
+     * Log In the user and save received apiKey.
+     *
+     * @param username
+     * @param password
+     */
     auth : function(username, password) {
         if(util.isOnline()) {
             $.mobile.loading('show');
@@ -215,6 +263,12 @@ var restConn =  {
         }
     },
 
+    /**
+     * Registers new user to WS.
+     * @param username email actually
+     * @param password
+     * @param name
+     */
     register : function(username, password, name) {
         if(util.isOnline()) {
             $.mobile.loading('show');
@@ -239,10 +293,21 @@ var restConn =  {
         restConn.authOpts.apiKey = apikey;
     },
 
+    /**
+     * Determines whether the user is authorized (=apiKey is set).
+     * @returns {boolean}
+     */
     isAuthenticated : function () {
         return (restConn.authOpts.apiKey != util.UNDEF)
     },
 
+
+    /**
+     * Handles REST requests. It is not always possible use this method, when it is
+     * needed to use request output right away.
+     * @param req
+     * @param callback
+     */
     handleRequest : function (req, callback) {
 
         req.done(function (data) {
@@ -258,8 +323,6 @@ var restConn =  {
             util.toastLong('Error: ' + JSON.parse(x.responseText).ws.message);
             $.mobile.loading('hide');
         });
-    },
-
-
+    }
 };
 
