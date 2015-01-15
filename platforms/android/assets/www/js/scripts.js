@@ -1,18 +1,38 @@
 /**
- * Created by sange on 11/21/14.
+ * @author Petr Marek
+ * Licence Apache 2.0, see below link
+ * @link http://www.apache.org/licenses/LICENSE-2.0
  */
 
 
+/**
+ * Module: scripts - corresponds with Scripts section in the app.
+ *
+ * @type {{addToggle: boolean, scriptIdArray: Array, onBack: Function, openView: Function, updateList: Function, refreshItems: Function, refreshList: Function, edit: Function, add: Function, prepareProtocolSelect: Function, protocolSelected: Function, del: Function, save: Function, runScript: Function, showResult: Function, onCreated: Function, onUpdated: Function, onDeleted: Function, bindOnClicks: Function}}
+ */
 var script = {
 
+    /**
+     * add or edit
+     */
     addToggle : false,
 
+    /**
+     * local array of scripts
+     */
     scriptIdArray : [],
 
+    /**
+     * Handles back button.
+     */
     onBack : function () {
         $.mobile.changePage($('#' + page.SCRIPTS), util.backTransOpt);
     },
 
+    /**
+     * Loads props from secStorage and loads (updates) Scripts list.
+     * If WS not set prompt to go to the settings.
+     */
     openView : function(){
 
         settings.ws.load();
@@ -20,6 +40,7 @@ var script = {
         if (util.isOnline()) {
             if (restConn && restConn.isAuthenticated()) {
                 script.updateList();
+                protocol.updateList();
                 $(document).on('pagebeforeshow', '#' + page.SCRIPTS, function() {
                     script.bindOnClicks();
                 });
@@ -35,6 +56,11 @@ var script = {
         restConn.readScripts();
     },
 
+    /**
+     * Refreshes list of scripts - from ws DB.
+     *
+     * @param array scripts fetched from ws DB
+     */
     refreshItems: function(array){
 
         // first empty listview and array
@@ -76,12 +102,18 @@ var script = {
         this.refreshList();
     },
 
+    /**
+     * Refreshes list - UI component.
+     */
     refreshList: function () {
         $('#scripts_list').listview().listview('refresh');
     },
 
 
-
+    /**
+     * Edit script was clicked - gather texts from input fields and try to save it.
+     * @param scriptId
+     */
     edit: function(scriptId){
         $('#page_scripts_edit_header h1').html("Edit Script");
         this.addToggle = false;
@@ -102,6 +134,9 @@ var script = {
 
     },
 
+    /**
+     * Add script was clicked - gather texts from input fields and try to save it.
+     */
     add: function() {
         $('#page_scripts_edit_header h1').html("Add Script");
         this.addToggle = true;
@@ -121,6 +156,10 @@ var script = {
         $.mobile.changePage( "#" + page.SCRIPTS_EDIT, util.transOpt );
     },
 
+    /**
+     * Prepares protocol dropdown.
+     * First, clear it and then set it with current array of protocols.
+     */
     prepareProtocolSelect : function () {
         var protocolSelect = $('#script_edit_protocol');
         protocolSelect.empty();
@@ -133,26 +172,37 @@ var script = {
             protocol.updateList();
         } else {
             console.log('filling select');
+
+            // puvodne pod cyklem nasl. 2 radky
+            var curScriptId = $('#hidden_script_id').html();
+            var curScript = script.scriptIdArray[curScriptId];
+
+            var isProtoVisibleForUser = false;
             protocol.protocolIdArray.forEach(function printBr(protocol, protocolId, array) {
                 var id = "protocol-id-" + protocolId;
                 var opt = '<option value="' + id + '">' + protocol.name + '</option>';
                 protocolSelect.append(opt);
+                if(curScript.protocol_id !== undefined && curScript.protocol_id == protocolId){
+                    isProtoVisibleForUser = true;
+                }
             });
 
-
-            var curScriptId = $('#hidden_script_id').html();
-            var curScript = script.scriptIdArray[curScriptId];
-            if(this.addToggle || curScript.protocol_id == null) {
-                console.log('default');
+            if(this.addToggle || curScript.protocol_id == null || !isProtoVisibleForUser) {
+                //console.log('default');
                 protocolSelect.val('default').selectmenu('refresh');
             } else {
-                console.log('ideckem');
+                //console.log('ideckem: ' + curScript.protocol_id);
+
                 protocolSelect.val("protocol-id-" + curScript.protocol_id).selectmenu('refresh');
             }
         }
     },
 
-
+    /**
+     * Handles situation when "Create new protocol..." was selected
+     * from protocol dropdown, when script edit/add. If it's selected, send user
+     * to protocol add page to create new protocol for the script he is editing.
+     */
     protocolSelected : function () {
         var selectId = '#script_edit_protocol';
         if($(selectId + ' option:selected').val() == "create_new") {
@@ -163,6 +213,9 @@ var script = {
         }
     },
 
+    /**
+     * Delete script clicked and confirmed.
+     */
     del: function() {
         var scriptId = $('#hidden_script_id').html();
         restConn.deleteScript(scriptId);
@@ -170,6 +223,9 @@ var script = {
         $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
     },
 
+    /**
+     * Save script clicked - determine if edit or add REST method should be used.
+     */
     save: function() {
         var script = {};
         script.name = $('#script_edit_name').val();
@@ -190,11 +246,19 @@ var script = {
         $.mobile.changePage( "#" + page.SCRIPTS, util.backTransOpt );
     },
 
+    /**
+     * Run script clicked - run it (=GET REST method).
+     * @param scriptId
+     */
     runScript: function(scriptId) {
         restConn.runScript(scriptId);
 
     },
 
+    /**
+     * Shows script output, exit code included.
+     * @param data
+     */
     showResult : function (data) {
 
         alert('ExitCode: ' + data.data.exitCode + ' \n' + data.data.scriptOutput);
@@ -213,6 +277,11 @@ var script = {
 
     },
 
+    /**
+     * Callback when creating new script was successful, also update script-array.
+     * Add script to the list and updateList to keep sync.
+     * @param newScript
+     */
     onCreated : function(newScript) {
         this.scriptIdArray[newScript.id] = newScript;
 
@@ -232,6 +301,12 @@ var script = {
         this.updateList();
     },
 
+    /**
+     * Callback when script updated successfully, also update script-array.
+     * UpdateList to keep sync.
+     *
+     * @param updatedScript
+     */
     onUpdated : function(updatedScript) {
         util.toast('Script updated');
 
@@ -241,12 +316,21 @@ var script = {
         this.updateList();
     },
 
+    /**
+     * Callback when script deletion was successful, also update script-array.
+     * UpdateList to keep sync.
+     *
+     * @param scriptId
+     */
     onDeleted : function (scriptId) {
         util.toast('Script deleted');
         $('#scripts_list #' + scriptId).parent().remove();
         this.updateList();
     },
 
+    /**
+     * Binds onClick events: back (from protocol creation page too), delete, add, refresh (updateList)
+     */
     bindOnClicks : function () {
         $(document).off('click', '#script_back_button').on('click', '#script_back_button', function (e) {
             script.onBack();
@@ -271,6 +355,14 @@ var script = {
 
 };
 
+
+/**
+ * Scripts edit page form validation.
+ * For more info, @see app.js.
+ *
+ * Based on tut below.
+ * @link http://www.sitepoint.com/basic-jquery-form-validation-tutorial/
+ */
 (function($,W,D) {
     var JQUERY4U = {};
 
@@ -317,7 +409,6 @@ var script = {
         }
     };
 
-    //when the dom has loaded setup form validation rules
     $(D).ready(function($) {
         JQUERY4U.UTIL.setupFormValidation();
     });

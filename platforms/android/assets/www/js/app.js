@@ -1,5 +1,15 @@
 "use strict";
 
+/**
+ * @author Petr Marek
+ * Licence Apache 2.0, see below link
+ * @link http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+/**
+ * Pages object - constant strings with page names.
+ * @type {{INDEX: string, ENTERPIN: string, OVERVIEW: string, PROTOCOLS: string, PROTOCOLS_EDIT: string, SCRIPTS: string, SCRIPTS_EDIT: string, SETTINGS: string}}
+ */
 var page = {
     INDEX: "index",
     ENTERPIN: "enterpin",
@@ -12,22 +22,40 @@ var page = {
 
 };
 
+/**
+ * App object - initializes application and listeners, sets
+ *
+ * @type {{initialize: Function, bindEvents: Function, onDeviceReady: Function, receivedEvent: Function, onBackKeyDown: Function, onPauseApp: Function, onResumeApp: Function, initEnterPinPage: Function, onDeniedAccess: Function}}
+ */
 var app = {
-    // Application Constructor
+
+    /**
+     * Initializes application - binds events-listeners.
+     */
     initialize: function() {
         this.bindEvents();
 
     },
-    // Bind Event Listeners
+
+    /**
+     * Bind Event Listeners.
+     */
     bindEvents: function() {
         document.addEventListener('deviceready', app.onDeviceReady);
     },
 
+    /**
+     * Callback for "deviceready" event.
+     */
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
+        app.receivedEvent();
     },
 
-    receivedEvent: function(id) {
+    /**
+     *  Called when device is ready. Adds another callbacks to listeners:
+     *  onPause, onResume, onBackKeyDown
+     */
+    receivedEvent: function() {
 
         document.addEventListener("pause", this.onPauseApp);
         document.addEventListener("resume", this.onResumeApp);
@@ -39,6 +67,10 @@ var app = {
 
     },
 
+
+    /**
+     * Callback handles onBack key down event, It returns to an appropriate page or exits app.
+     */
     onBackKeyDown: function () {
 
         if($.mobile.activePage.attr('id') == page.INDEX || $.mobile.activePage.attr('id') == page.ENTERPIN) {
@@ -65,6 +97,9 @@ var app = {
         }
     },
 
+    /**
+     * Callback handles onPause event, when user exits the app - it forgets entered passphrase.
+     */
     onPauseApp : function() {
         if (secStorage.instance != null && secStorage.instance != util.UNDEF){
             secStorage.instance.removePass();
@@ -72,6 +107,9 @@ var app = {
         }
     },
 
+    /**
+     * Callback handles onResume event, when user returns to the app - it requires passphrase.
+     */
     onResumeApp : function() {
         setTimeout(function(){
             app.initEnterPinPage();
@@ -79,6 +117,9 @@ var app = {
         }, 0);
     },
 
+    /**
+     * Init Enter pin page - headline and button texts, etc.
+     */
     initEnterPinPage: function(){
         var headline = '';
         var btn = '';
@@ -95,6 +136,9 @@ var app = {
         $('#enterpin_pin').val('');
     },
 
+    /**
+     * Function handles a situation when it seams that user did not provide passphrase.
+     */
     onDeniedAccess : function () {
         util.toast('You must enter passphrase first.');
         app.onResumeApp();
@@ -103,12 +147,21 @@ var app = {
 
 app.initialize();
 
-/** based on: http://www.sitepoint.com/basic-jquery-form-validation-tutorial/ */
+/**
+ * Enter pin page form validation.
+ *
+ * Based on tut below.
+ * @link http://www.sitepoint.com/basic-jquery-form-validation-tutorial/
+ */
 (function($,W,D) {
     var JQUERY4U = {};
 
     JQUERY4U.UTIL =
     {
+        /**
+         * Validation defines two sections: rules and messages.
+         * Both belongs to form input name.
+         */
         setupFormValidation: function()
         {
             $('#enterpin_form').validate({
@@ -124,6 +177,13 @@ app.initialize();
                         minlength: $.validator.format("At least {0} characters required!")
                     }
                 },
+
+                /**
+                 * Submits form. It submits pass checks and loads saved WS props. Then
+                 * it sets REST connector, if WS props. are available.
+                 *
+                 * @param form
+                 */
                 submitHandler: function(form) {
                     secStorage.submitPass($('#enterpin_pin').val());
 
@@ -139,6 +199,10 @@ app.initialize();
                     }
                 }
             });
+
+            /**
+             * Registers onClick event to "enter pin" button to submit the form.
+             */
             $("#submit_pin").click(function(){
                 $("#enterpin_form").submit();
                 return false;
@@ -146,7 +210,6 @@ app.initialize();
         }
     };
 
-    //when the dom has loaded setup form validation rules
     $(D).ready(function($) {
 
         JQUERY4U.UTIL.setupFormValidation();

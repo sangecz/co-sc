@@ -6,7 +6,6 @@ label.error {
     text-align: left !important;
     width: 280px !important;
     font-size: 12px !important;
-    /*position: fixed;*/
 }
 
 h4 {
@@ -43,13 +42,7 @@ h4 {
 
 .selects {
     margin-bottom: 8px !important;
-    /*display: inline !important;*/
-    /*position: relative !important;*/
 }
-
-/*#page_scripts_edit label {*/
-    /*margin-bottom: .4em !important;*/
-/*}*/
 
 #settings_ws_form {
     line-height: 0.5em !important;

@@ -5,7 +5,7 @@
  */
 
 /**
- * Module: protocols - corresponds with Protocols section in app.
+ * Module: protocols - corresponds with Protocols section in the app.
  *
  * @type {{addToggle: boolean, fromScripts: boolean, createNewSelected: boolean, protocolIdArray: Array, onBack: Function, openView: Function, updateList: Function, refreshItems: Function, refreshList: Function, edit: Function, add: Function, del: Function, save: Function, onCreated: Function, onUpdated: Function, onDeleted: Function, bindOnClicks: Function}}
  */
@@ -70,9 +70,9 @@ var protocol = {
     },
 
     /**
-     * Refreshes list of protocols - from DB.
+     * Refreshes list of protocols - from ws DB.
      *
-     * @param array protocols fetched from DB
+     * @param array protocols fetched from ws DB
      */
     refreshItems: function(array){
         // first empty listview and array
@@ -228,7 +228,7 @@ var protocol = {
     },
 
     /**
-     * Callback when creating new protocol was successful.
+     * Callback when creating new protocol was successful, also update protocol-array.
      * Add protocol to the list and updateList to keep sync.
      * @param newProtocol
      */
@@ -268,7 +268,7 @@ var protocol = {
     },
 
     /**
-     * Callback when protocol deletion was successful. Update lists then to keep sync.
+     * Callback when protocol deletion was successful, also update protocol-array.
      * UpdateList to keep sync.
      *
      * @param protocolId

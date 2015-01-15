@@ -1,7 +1,14 @@
 /**
- * Created by sange on 11/21/14.
+ * @author Petr Marek
+ * Licence Apache 2.0, see below link
+ * @link http://www.apache.org/licenses/LICENSE-2.0
  */
 
+/**
+ * util object - collection of different helper functions.
+ *
+ * @type {{UNDEF: string, CURRENT_ITEM_ID: string, storage: *, backTransOpt: {transition: string, reverse: boolean}, transOpt: {transition: string}, toast: Function, toastLong: Function, checkConnection: Function, isOnline: Function}}
+ */
 var util = {
     UNDEF : 'undefined',
     CURRENT_ITEM_ID: 'CURRENT_ITEM_ID',
@@ -16,6 +23,11 @@ var util = {
         transition: 'slide'
     },
 
+    /**
+     * Android like toast positioned horizontally in the middle
+     * and vertically in 3/4 down on the screen.
+     * @param msg
+     */
     toast : function(msg){
         $("<div class='ui-loader ui-overlay-shadow ui-body-e ui-corner-all'><b>"+msg+"</b></div>")
             .css({ display: "block",
@@ -34,6 +46,10 @@ var util = {
             });
     },
 
+    /**
+     * Longer Android like toast.
+     * @param msg
+     */
     toastLong : function(msg){
         $("<div class='ui-loader ui-overlay-shadow ui-body-e ui-corner-all'><b>"+msg+"</b></div>")
             .css({ display: "block",
@@ -52,6 +68,9 @@ var util = {
             });
     },
 
+    /**
+     * Uses network-information plugin to determine network state.
+     */
     checkConnection : function () {
         var networkState = navigator.connection.type;
 
@@ -69,6 +88,10 @@ var util = {
 
     },
 
+    /**
+     * Checks if device is online.
+     * @returns {boolean}
+     */
     isOnline : function () {
         var networkState = navigator.connection.type;
 
@@ -82,6 +105,9 @@ var util = {
 
 };
 
+/**
+ * Prototype; forEach loop.
+ */
 if (!Array.prototype.forEach)
 {
     Array.prototype.forEach = function(fun)

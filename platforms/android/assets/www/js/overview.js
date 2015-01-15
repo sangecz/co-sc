@@ -1,9 +1,18 @@
+/**
+ * Module: overview, it corresponds with app section: Monitoring
+ *
+ * @type {{url: null, username: null, password: null, openOverview: Function, getHttpBasicAuthUrl: Function}}
+ */
 var overview = {
 
     url : null,
     username : null,
     password : null,
 
+    /**
+     * Loads overview props. when set, then opens InAppBrowser window
+     * with provided URL and credentials.
+     */
     openOverview : function () {
 
         settings.overview.load();
@@ -24,6 +33,14 @@ var overview = {
         }
     },
 
+    /**
+     * Creates HTTP basic auth URL.
+     *
+     * @param username
+     * @param password
+     * @param url
+     * @returns string url
+     */
     getHttpBasicAuthUrl : function(username, password, url){
         var prefix = "";
         if(/^http:\/\//.test(url)) {
